@@ -14,7 +14,9 @@
 </p>
 
 # 💡 General Idea
+Our main inspiration came from GPS & Communication devices like the Garmin GPSMAP 66 and the Nokia 800 Tough, the Indirecta Communicator (or iComm) is an attempt to create one such device, that's open source, free for all and modular.
 # ✏️ Design
+
 # 🧩 Modularity
 # 🌡️ Sensors
 # 🪩 Peripherals
