@@ -58,7 +58,7 @@ Do note that each module, application or script can have it's own configuration 
 # 🌡️ Sensors
 Indirecta ships each iComm or communicator device with a Sensors module. It uses various patched functions ranging from atmospheric data ([thank you PulsarNova!](https://create.roblox.com/marketplace/asset/4996116798)) to extended climate data derived from atmospheric data ([thank you ChatGPT!](https://chat.openai.com/)).  
 
-Thanks to a wonderful idea and ChatGPT, Indirecta has been able to create a state-of-the-art sensor function for electromagnetic interference, that's essentialyl a value fluctuating depending on the number of parts in a range with scripts, and their distance to the player.  
+Thanks to a wonderful idea and ChatGPT, Indirecta has been able to create a state-of-the-art sensor function for electromagnetic interference, that's essentially a value fluctuating depending on the number of parts in a range with scripts, and their distance to the player.  
 
 We encourage iComm users to test this sensor in their game, and impose appropriate work safety and system configurations depending on sensor readings
 <details>
