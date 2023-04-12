@@ -41,7 +41,8 @@ Our main inspiration came from GPS & Communication devices like the Garmin GPSMA
 
 # 🧩 Modularity
 A core idea of the iComm is that to use and require different modules for each scope, applications, and resources.  
-Here's how iComm GUI is structured:
+Here's how iComm GUI is structured:  
+<img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm/media/gui_struct.png" width="150px"/>
 > - LocalScript `iComm`  
 >> - **Module** `Keyboard` Handles all customizable "keys", unique to the iComm device, unifies all button .Activated events under one KeyPressEvent
 >> - **Module** `Peripherals` Handles all customizable "peripherals" in it's own script, flashlight API, status led API, etc.
