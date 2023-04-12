@@ -49,7 +49,7 @@ Here's how iComm GUI is structured:
 >> - **Module** `Screen` Handles all UI functions unique to the iComm (tweens, notifications, custom D-PAD scrolls, clock, etc.)  
 >> - **Module** `Sensors` Very cool Sensors module, usually reused in various Indirecta devices, mentioned below in the README
 >> - TextButton `AppTemplate` Irrelevant, used as button template in iComm App Menu
->> - **Configuration** `Apps` Folder containing all iComm app modules, each app has it's own structure depending on the ModuleScript template that will be discussed later in the document  
+>> - **Configuration** `Apps` Folder containing all iComm app modules, each app has it's own structure depending on the ModuleScript template semi-unique to each app (check it out!)
 
 > - **Frame** `Anchor` Frame containing all device UI (screen, keyboard, deco, etc.)
 > - **Frame** `ScreenSizeWarning` Independent frame used in Indirecta products to warn of screen resolutions that might alter normal device behavior
