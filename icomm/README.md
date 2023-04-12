@@ -149,6 +149,8 @@ We suggest using the iComm in any RTECH-product based game, really, thanks to it
 maps contributing to forest/deep game navigation,  
 and incredible modularity empowering the game owner to customize the iComm to fit any use case, and create their own game-themed applications.
 
+
+
 ## ⚠️ License
 
 The iComm and any other proprietary related devices by Indirecta are released under the GNU GPL v3 license.
