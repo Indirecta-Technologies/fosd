@@ -1,6 +1,6 @@
 <h1 align="center">
   <img alt="cgapp logo" src="https://raw.githubusercontent.com/Indirecta-Technologies/branding/main/logos/indirecta_logo_medium500_withPill.png" width="350px"/><br/>
-  iComm
+  iComm Nano
 </h1>
 <p align="center">
   <a href="https://github.com/Indirecta-Technologies/branding">Branding</a> •
@@ -16,51 +16,32 @@
 # 💡 General Idea
 Essentially a distilled version of the iComm, the iComm Nano is a small pocket-sized device with basic compass, clock & (reduced) sensor functionality
 # ✏️ Design
-<img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm-na/media/design_illustr.png" width="450px"/>
-
-- ###  `Decorative Antennas` 
-  Respectively a short GPS Antenna and a long radio Antenna for decoration purposes  
+<img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm-nano/media/design_illustr.png" width="450px"/>
 
 - ###  `Colored Rubber Shell` 
   Protective rubber shell denoting purpose using accent color  
 
 - ###  `Aspect Ratio` 
-  Roughly 16:10 (status bar excluded)  
+  Roughly 27:29
 
 - ## Hardware Keys 
   `Shutdown` ON/OFF Power Toggle for device, turning the device on takes longer than turning it off  
 
 - ## Software Keys (Keyboard)
-  `LSK` `RSK` Respectively left and right soft keys, used in applications for zooming in and out (maps), turning volume up down, transposing octave (piano), and other misc. software purposes  
+  `UP` `DOWN` Essentially replace the iComm's software keys, used in menu decisions along with OK (exit) 
 
-  `Menu` `Back` Respectively used to go back to the iComm apps menu and go back generally (semi-software defined function)  
-
-  **D-PAD** `UP` `LEFT` `OK` `RIGHT` `DOWN` Used for map movement, or other misc. software purposes, OK generally used also as CSK (Center Soft Key, in the bottom bar menu with three options)
-  
-  `LFN` `RFN` Respectively left and right function keys, similiar in purpose to the software keys, generally reserved for high-level app purposes like changing map display mode, opening a debug menu, etc.
+  `OK` Used to go back to the iComm Nano menu and go back from applications 
 
 # 🧩 Modularity
-A core idea of the iComm is that to use and require different modules for each scope, applications, and resources.  
-Here's how iComm GUI is structured:  
-<img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm/media/gui_struct.png" width="150px"/>
-> - LocalScript `iComm`  
->> - **Module** `Keyboard` Handles all customizable "keys", unique to the iComm device, unifies all button .Activated events under one KeyPressEvent
->> - **Module** `Peripherals` Handles all customizable "peripherals" in it's own script, flashlight API, status led API, etc.
->> - **Module** `Screen` Handles all UI functions unique to the iComm (tweens, notifications, custom D-PAD scrolls, clock, etc.)  
->> - **Module** `Sensors` Very cool Sensors module, usually reused in various Indirecta devices, mentioned below in the README
->> - TextButton `AppTemplate` Irrelevant, used as button template in iComm App Menu
->> - **Configuration** `Apps` Folder containing all iComm app modules, each app has it's own structure depending on the ModuleScript template semi-unique to each app (check it out!)
-
-> - **Frame** `Anchor` Frame containing all device UI (screen, keyboard, deco, etc.)
-> - **Frame** `ScreenSizeWarning` Independent frame used in Indirecta products to warn of screen resolutions that might alter normal device behavior
-
-Do note that each module, application or script can have it's own configuration structure and config location
+The iComm Nano is modular in a sense, but does not load any external apps and just requires the `Screen`, `Sensors`, `Keyboard`, and `Graph` modules. 
 # 🌡️ Sensors
 Indirecta ships each iComm or communicator device with a Sensors module. It uses various patched functions ranging from atmospheric data ([thank you PulsarNova!](https://create.roblox.com/marketplace/asset/4996116798)) to extended climate data derived from atmospheric data ([thank you ChatGPT!](https://chat.openai.com/)).  
 
 Thanks to a wonderful idea and ChatGPT, Indirecta has been able to create a state-of-the-art sensor function for electromagnetic interference, that's essentially a value fluctuating depending on the number of parts in a range with scripts, and their distance to the player.  
 
 We encourage iComm users to test this sensor in their game, and impose appropriate work safety and system configurations depending on sensor readings
+
+The iComm Nano lacks sensors like Dew Point, UV Index, which would not be useful in most scenarios where the iComm Nano would be needed.
 <details>
   <summary>Magnetic Field Strength Algorithm</summary>
   
@@ -139,19 +120,10 @@ We encourage iComm users to test this sensor in their game, and impose appropria
 > ```
 </details>
 
-# 🪩 Peripherals  
-As described before, the iComm also features a Peripherals module, it currently has the following default peripherals:
-> - **function** `:Led(Color3)` Changes status LED Peripheral color to first argument provided (must be a Color3 obj)
-> - **function** `:Torch(On, Brightness)` Changes torch peripheral light enabled depending on first argument, range and brightness depending on the second argument; if no arguments are provided, the Torch LED will toggle Value with a default Brightness of `3`
+
 # ⚗️ Use cases
-Thanks to the iComm's modularity, we foresee endless possibilities.  
-We suggest using the iComm in any RTECH-product based game, really, thanks to it's encrypted frequency Radio powering safe and secure staff communications,  
-maps contributing to forest/deep game navigation,  
-and incredible modularity empowering the game owner to customize the iComm to fit any use case, and create their own game-themed applications.
-
-<img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm/media/radio.png" width="300px"/> <img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm/media/sensors.png" width="300px"/> <img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm/media/vast.png" width="300px"/> <img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm/media/3rd.png" width="300px"/>
-
+We suggest using the iComm Nano in any RTECH-product based game, as an easy to use navigation tool, and as a lightweight alternative to the iComm.
 
 ## ⚠️ License
 
-The iComm and any other proprietary related devices by Indirecta are released under the GNU GPL v3 license.
+The iComm Nano and any other proprietary related devices by Indirecta are released under the GNU GPL v3 license.
