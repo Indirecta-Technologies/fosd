@@ -14,11 +14,16 @@
 </p>
 
 # 💡 General Idea
-Indirecta ships each iComm or communicator device with 4 default applications, these applications are called core apps, similiar to GNOME Desktop Environment's Core and Circle apps.  
+Indirecta ships each iComm or communicator device with roughly 4 default applications, these applications are called core apps, similiar to GNOME Desktop Environment's Core and Circle apps.  
 This article aims to describe best all the core applications.  
 More complex core applications like the Radiocomm app can have their own article.
 
 # 🐞 Indirecta Free Open Source Device Debug Kit `FOSDebug`
+<img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm/media/fosdebug_1.png" width="200px"/>
+<img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm/media/fosdebug_2.png" width="200px"/>
+<img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm/media/fosdebug_3.png" width="200px"/>
+<img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm/media/fosdebug_4.png" width="200px"/>
+
 >Application displaying in a scrollable list all loaded applications, it is heavily in development, and not user friendly as it was designed as a developer kit accessory only.  
 >It allows developers to select applications, and edit live module data such as sensor configuration, app name, icon, soft keys, etc. without interrupting the playtest
 
