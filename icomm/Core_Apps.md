@@ -14,7 +14,7 @@
 </p>
 
 # 💡 General Idea
-Indirecta ships each iComm or communicator device with roughly 4 default applications, these applications are called core apps, similiar to GNOME Desktop Environment's Core and Circle apps.  
+Indirecta ships each iComm or communicator device with roughly 5 default applications, these applications are called core apps, similiar to GNOME Desktop Environment's Core and Circle apps.  
 This article aims to describe best all the core applications.  
 More complex core applications like the Radiocomm app can have their own article.
 
