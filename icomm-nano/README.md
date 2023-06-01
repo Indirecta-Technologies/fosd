@@ -15,6 +15,11 @@
 
 # 💡 General Idea
 Essentially a distilled version of the iComm, the iComm Nano is a small pocket-sized device with basic compass, clock & (reduced) sensor functionality
+
+- ###  📁 `media/` Project screenshots & media resources
+- ###  📁 `src/core_releases` Core ScreenGUI .rbxmx revisions
+- ###  📁 `src/tool_devices` Scripted tool .rbxmx files with core loader
+
 # ✏️ Design
 <img alt="icomm design" src="https://raw.githubusercontent.com/Indirecta-Technologies/fosd/main/icomm-nano/media/design_illustr.png" width="450px"/>
 

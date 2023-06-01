@@ -89,6 +89,7 @@ More complex core applications like the Radiocomm app can have their own article
 - The user is greeted with a red on black selection menu. Use the `UP` and `DOWN` iComm Keys to scroll and `OK` to choose.  The only choice available on the current version is the Applications debug menu. 
 - After selecting the Applications menu, the user can scroll using the previous keys or the mouse scroll wheel, and select an application.
 - After selecting an application, the user will be able to edit live module "self" data such as AppInfo, Configuration strings and booleans.
+- An error simulator tool and a keyboard testing tool have been since added to the debug kit
 
 
 

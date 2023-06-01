@@ -1,0 +1,952 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="ModuleScript" referent="RBXAF5D0C190C1B418180D77C745EC98C41">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<Content name="LinkedSource"><null></null></Content>
+			<string name="Name">ConwaysGOL</string>
+			<string name="ScriptGuid">{424FF253-3AF1-4AD9-82A2-2001703B2B2F}</string>
+			<ProtectedString name="Source"><![CDATA[local module = {
+	-- iComm Circle App
+	["AppInfo"] =  {
+		["Icon"] = "🌸";
+		["Name"] = "C's GOL";
+		["SoftKeys"] = {"Reset","Start","Step"};
+		["Revision"] = "1.2";
+	};
+
+}
+
+function module:Init(name, value)
+	if not self[name] and value then self[name] = value else return false end
+	return true
+end
+
+-- Services
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+local CellOriginal = script.Cell
+
+local Test = false
+
+local Playing = false
+
+local LastSpeedValue = ""
+
+local AliveNeighborSpawnInt, MinimumAliveNeighborAmount, MaximumAliveNeighborAmount = 3,2,3
+
+function module:Open()
+
+	self:Init("AppFrame", script:FindFirstChild("AppFrame"))
+	self["AppFrame"].Name = self["AppInfo"]["Name"]
+	self["AppFrame"].Parent = self.deps["screen"].components["mainscreen"]
+	self.deps["screen"].components.statusbar.Macro.Text = self["AppInfo"]["Name"]
+	self.deps["screen"].showOnly(self["AppInfo"]["Name"])
+	self.deps["screen"].bottom_bar(table.unpack(self["AppInfo"]["SoftKeys"]))
+
+
+	self:Init("GridSize", Vector2.new(math.floor(self["AppFrame"]["Main"].AbsoluteSize.X / (self["AppFrame"]["Main"].UIGridLayout.CellSize.X.Offset + self["AppFrame"]["Main"].UIGridLayout.CellPadding.X.Offset)),math.floor(self["AppFrame"]["Main"].AbsoluteSize.Y / (self["AppFrame"]["Main"].UIGridLayout.CellSize.Y.Offset + self["AppFrame"]["Main"].UIGridLayout.CellPadding.Y.Offset))))
+
+	local CellTable = {}
+
+	local function GetCellAliveFromVector2(Vector) -- Cell coordinates go in and alive status goes out.
+		-- This checks if the requested cell is out of the grid
+		if Vector.X == 0 or Vector.Y == 0 or Vector.X == self["GridSize"].X + 1 or Vector.X == self["GridSize"].Y + 1 or CellTable[Vector.X][Vector.Y] == nil then
+			return false
+		end
+		return CellTable[Vector.X][Vector.Y]:GetAttribute("Alive")
+	end
+
+	local function GetHueFromVector2(Vector)
+		if Vector.X == 0 or Vector.Y == 0 or Vector.X == self["GridSize"].X + 1 or Vector.X == self["GridSize"].Y + 1 or CellTable[Vector.X][Vector.Y] == nil then
+			return false
+		end
+		return CellTable[Vector.X][Vector.Y]:GetAttribute("Alive") and CellTable[Vector.X][Vector.Y]:GetAttribute("Hue") or nil
+	end
+
+	self:Init("Step", 0)
+
+	function self:GenerateGrid() -- Generates grid.
+		-- Deletes any old cells
+		for index,value in pairs(self["AppFrame"]["Main"]:GetChildren()) do
+			if value:IsA("TextButton") then
+				value:Destroy()
+			end
+		end
+		-- Made for debuging, just couns the cells
+		local Count = 0
+		for Y = 1,self["GridSize"].Y do
+			for X = 1,self["GridSize"].X do
+				-- Creates cell and configures it here, gives it attributes like X,Y and Alive
+				local Cell = CellOriginal:Clone()
+				Cell.Parent = self["AppFrame"]["Main"]
+				-- Assigns a function to run when the cell changes the "Alive" attribute
+				Cell.AttributeChanged:Connect(function(attribute)
+					if attribute == "Alive" then
+						if Cell:GetAttribute("Alive") == true then
+							local Tween = TweenService:Create(Cell.Glow,TweenInfo.new(0.5,Enum.EasingStyle.Quad),{ImageTransparency = 0.8})
+							Tween:Play()
+							--Cell.BackgroundColor3 = Color3.new(0.0705882, 0.298039, 0.901961)
+							Cell.BackgroundColor3 = Color3.fromHSV(Cell:GetAttribute("Hue"), 1, Cell:GetAttribute("Time"))
+							Cell.Glow.ImageColor3 = Color3.fromHSV(Cell:GetAttribute("Hue"), 1, Cell:GetAttribute("Time"))
+
+							Cell.BackgroundTransparency = 0
+						else
+							local Tween = TweenService:Create(Cell.Glow,TweenInfo.new(0.5,Enum.EasingStyle.Quad),{ImageTransparency = 1})
+							Tween:Play()
+							Cell.BackgroundColor3 = Color3.new(0.14902, 0.14902, 0.14902)
+							Cell.BackgroundTransparency = 1
+						end
+					end
+				end)
+				Cell:SetAttribute("X",X)
+				Cell:SetAttribute("Y",Y)
+				Cell:SetAttribute("Alive",false)
+				Cell:SetAttribute("Hue",math.random() % 1)
+				Cell:SetAttribute("Time",1)
+
+				if CellTable[X] == nil then
+					CellTable[X] = {}
+				end
+				CellTable[X][Y] = Cell
+				-- Set the "Test" variable (at the begginning of the script) to true and you will see what this does.
+				if Test == true then
+					Cell.TextTransparency = 0
+					Cell.TextStrokeTransparency = 0
+					Cell.Text = "X: " .. X .. " Y: " .. Y
+				end
+				-- Reacts to mouse clicks
+				Cell.MouseButton1Click:Connect(function()
+					if Cell:GetAttribute("Alive") == true then
+						Cell:SetAttribute("Alive",false)
+					else
+						Cell:SetAttribute("Alive",true)
+						Cell:SetAttribute("Time", self["Step"] or 1)
+						Cell:SetAttribute("Hue", math.random() % 1)
+					end
+				end)
+				-- Counts cells
+				if Cell ~= nil and Cell.Parent == self["AppFrame"]["Main"] then
+					Count += 1
+				end
+			end
+			wait()
+		end
+		if Test == true then
+			print(Count)
+		end
+		self["Step"] = 0
+		self["AppFrame"]["Steps"].Text = "Step "..self["Step"]
+	end
+
+	function self:Generation() -- Will calculate 1 generation when called
+		local OperationsPlanned = {} -- Records changes to do when everything is calculated
+		for index,value in pairs(self["AppFrame"]["Main"]:GetChildren()) do -- Goes through every cell
+			if value:IsA("TextButton") then
+				-- Gets the cell X,Y and Alive status
+				local X = value:GetAttribute("X")
+				local Y = value:GetAttribute("Y")
+				local Alive = value:GetAttribute("Alive")
+				local Hue = value:GetAttribute("Hue")
+				local Hues_y = 0
+				local Hues_x = 0
+
+				local Time = value:GetAttribute("Time")/self["Step"]
+				local TotalAliveNeighbors = 0
+				-- Counts how many of the eight neighbors are alive
+				if GetCellAliveFromVector2(Vector2.new(X - 1,Y)) == true then
+					TotalAliveNeighbors += 1
+					local _Hue = GetHueFromVector2(Vector2.new(X - 1,Y))
+					Hues_y += math.sin(Hue*2*math.pi)
+					Hues_x += math.cos(Hue*2*math.pi)
+				end
+				if GetCellAliveFromVector2(Vector2.new(X - 1,Y + 1)) == true then
+					TotalAliveNeighbors += 1
+					local _Hue = GetHueFromVector2(Vector2.new(X - 1,Y + 1))
+					Hues_y += math.sin(Hue*2*math.pi)
+					Hues_x += math.cos(Hue*2*math.pi)
+				end
+				if GetCellAliveFromVector2(Vector2.new(X,Y + 1)) == true then
+					TotalAliveNeighbors += 1
+					local _Hue = GetHueFromVector2(Vector2.new(X,Y + 1))
+					Hues_y += math.sin(Hue*2*math.pi)
+					Hues_x += math.cos(Hue*2*math.pi)
+				end
+				if GetCellAliveFromVector2(Vector2.new(X + 1,Y + 1)) == true then
+					TotalAliveNeighbors += 1
+					local _Hue = GetHueFromVector2(Vector2.new(X + 1,Y + 1))
+					Hues_y += math.sin(Hue*2*math.pi)
+					Hues_x += math.cos(Hue*2*math.pi)
+				end
+				if GetCellAliveFromVector2(Vector2.new(X + 1,Y)) == true then
+					TotalAliveNeighbors += 1
+					local _Hue = GetHueFromVector2(Vector2.new(X + 1,Y))
+					Hues_y += math.sin(Hue*2*math.pi)
+					Hues_x += math.cos(Hue*2*math.pi)
+				end
+				if GetCellAliveFromVector2(Vector2.new(X + 1,Y - 1)) == true then
+					TotalAliveNeighbors += 1
+					local _Hue = GetHueFromVector2(Vector2.new(X + 1,Y - 1))
+					Hues_y += math.sin(Hue*2*math.pi)
+					Hues_x += math.cos(Hue*2*math.pi)
+				end
+				if GetCellAliveFromVector2(Vector2.new(X,Y - 1)) == true then
+					TotalAliveNeighbors += 1
+					local _Hue = GetHueFromVector2(Vector2.new(X,Y - 1))
+					Hues_y += math.sin(Hue*2*math.pi)
+					Hues_x += math.cos(Hue*2*math.pi)
+				end
+				if GetCellAliveFromVector2(Vector2.new(X - 1,Y - 1)) == true then
+					TotalAliveNeighbors += 1
+					local _Hue = GetHueFromVector2(Vector2.new(X - 1,Y - 1))
+					Hues_y += math.sin(Hue*2*math.pi)
+					Hues_x += math.cos(Hue*2*math.pi)
+				end
+
+				--return Hue(math.atan2(y,x)/(2*math.pi))
+
+				-- The game rules are here, you can change the numbers and see what happens!
+				if Alive == true then
+					if TotalAliveNeighbors < MinimumAliveNeighborAmount or TotalAliveNeighbors > MaximumAliveNeighborAmount then
+						OperationsPlanned[value] = false
+					end
+				else
+					if TotalAliveNeighbors == AliveNeighborSpawnInt then
+						OperationsPlanned[value] = true
+						Hues_y /= TotalAliveNeighbors
+						Hues_x /= TotalAliveNeighbors
+						value:SetAttribute("Hue", (math.atan2(Hues_y,Hues_x)/(2*math.pi)) % 1 + (math.random(5,10)-5)/10000)
+						value:SetAttribute("Time",self["Step"] or 1)
+					end
+				end
+			end
+		end
+	--[[ Applies all the operations that where planned before, this is done later, so that we calculate the
+	everything and ONLY THEN apply the chanages
+	]]
+		local TotalAlive = 0
+		for Object, AliveStatus in pairs(OperationsPlanned) do
+			Object:SetAttribute("Alive",AliveStatus)
+			TotalAlive = AliveStatus and TotalAlive + 1 or TotalAlive
+			self["AppFrame"]["AliveCells"].Text = TotalAlive .. " Alive Cells"
+		end
+		self["Step"] += 1
+		self["AppFrame"]["Steps"].Text = "Step "..self["Step"]
+	end
+
+	local function FixText()
+		if self["AppFrame"]["Main"].AbsoluteSize.Magnitude < 2300 then
+			print(self["AppFrame"]["Main"].AbsoluteSize.Magnitude)
+			for index,value in pairs(self["AppFrame"]["Main"].Parent:GetDescendants()) do
+				if value:IsA("TextLabel") or value:IsA("TextButton") or value:IsA("TextBox") then
+					value.TextScaled = true
+				end
+			end
+		else
+			for index,value in pairs(self["AppFrame"]["Main"].Parent:GetDescendants()) do
+				if value:IsA("TextLabel") or value:IsA("TextButton") or value:IsA("TextBox") then
+					value.TextScaled = false
+				end
+			end
+		end
+	end
+
+	self:GenerateGrid() -- Generates start grid
+
+	task.spawn(function()
+		while wait(.7) do
+			if Playing == true then
+				self:Generation()
+			end
+		end
+	end)
+
+end
+
+function module:Activate(deps, k, cc)
+	if (k == "OK") then
+		Playing = not Playing
+		if Playing == true then
+			self.deps["screen"].bottom_bar("Reset","Pause","Step")
+		else
+			self.deps["screen"].bottom_bar("Reset","Play","Step")
+		end
+	elseif (k == "LSK") then
+		Playing = false
+		self.deps["screen"].bottom_bar("Reset","Play","Step")
+		local Size = 12
+		self["AppFrame"]["Main"].UIGridLayout.CellSize = UDim2.fromOffset(Size,Size)
+		self["GridSize"] = Vector2.new(math.floor(self["AppFrame"]["Main"].AbsoluteSize.X / (self["AppFrame"]["Main"].UIGridLayout.CellSize.X.Offset + self["AppFrame"]["Main"].UIGridLayout.CellPadding.X.Offset)),math.floor(self["AppFrame"]["Main"].AbsoluteSize.Y / (self["AppFrame"]["Main"].UIGridLayout.CellSize.Y.Offset + self["AppFrame"]["Main"].UIGridLayout.CellPadding.Y.Offset)))
+		self:GenerateGrid()
+	elseif (k == "RSK") then
+		self:Generation()
+	end
+	if (k == "Back") then
+		self.deps["screen"].showOnly("Menu")
+		self.deps["screen"].bottom_bar()
+	end
+end
+
+return module
+
+
+]]></ProtectedString>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+		</Properties>
+		<Item class="TextButton" referent="RBX2851543E96274A07BCE2BE0BE4AEFAE1">
+			<Properties>
+				<bool name="Active">true</bool>
+				<Vector2 name="AnchorPoint">
+					<X>0</X>
+					<Y>0</Y>
+				</Vector2>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<bool name="AutoButtonColor">true</bool>
+				<bool name="AutoLocalize">true</bool>
+				<token name="AutomaticSize">0</token>
+				<Color3 name="BackgroundColor3">
+					<R>0.0705882385</R>
+					<G>0.298039228</G>
+					<B>0.898039281</B>
+				</Color3>
+				<float name="BackgroundTransparency">0</float>
+				<Color3 name="BorderColor3">
+					<R>0.105882362</R>
+					<G>0.164705887</G>
+					<B>0.207843155</B>
+				</Color3>
+				<token name="BorderMode">0</token>
+				<int name="BorderSizePixel">0</int>
+				<bool name="ClipsDescendants">false</bool>
+				<bool name="Draggable">false</bool>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/SourceSansPro.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/SourceSansPro-Regular.ttf</url></CachedFaceId>
+				</Font>
+				<int name="LayoutOrder">0</int>
+				<float name="LineHeight">1</float>
+				<int name="MaxVisibleGraphemes">-1</int>
+				<bool name="Modal">false</bool>
+				<string name="Name">Cell</string>
+				<Ref name="NextSelectionDown">null</Ref>
+				<Ref name="NextSelectionLeft">null</Ref>
+				<Ref name="NextSelectionRight">null</Ref>
+				<Ref name="NextSelectionUp">null</Ref>
+				<UDim2 name="Position">
+					<XS>0</XS>
+					<XO>0</XO>
+					<YS>0</YS>
+					<YO>0</YO>
+				</UDim2>
+				<bool name="RichText">false</bool>
+				<Ref name="RootLocalizationTable">null</Ref>
+				<float name="Rotation">0</float>
+				<bool name="Selectable">true</bool>
+				<bool name="Selected">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
+				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
+				<UDim2 name="Size">
+					<XS>0</XS>
+					<XO>200</XO>
+					<YS>0</YS>
+					<YO>50</YO>
+				</UDim2>
+				<token name="SizeConstraint">0</token>
+				<int64 name="SourceAssetId">-1</int64>
+				<token name="Style">0</token>
+				<BinaryString name="Tags"></BinaryString>
+				<string name="Text">Button</string>
+				<Color3 name="TextColor3">
+					<R>1</R>
+					<G>1</G>
+					<B>1</B>
+				</Color3>
+				<bool name="TextScaled">true</bool>
+				<float name="TextSize">14</float>
+				<Color3 name="TextStrokeColor3">
+					<R>0</R>
+					<G>0</G>
+					<B>0</B>
+				</Color3>
+				<float name="TextStrokeTransparency">1</float>
+				<float name="TextTransparency">1</float>
+				<token name="TextTruncate">0</token>
+				<bool name="TextWrapped">true</bool>
+				<token name="TextXAlignment">2</token>
+				<token name="TextYAlignment">1</token>
+				<bool name="Visible">true</bool>
+				<int name="ZIndex">1</int>
+			</Properties>
+			<Item class="ImageLabel" referent="RBXBFAD12E0AAE94A1898CF6088CD7731C9">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0.5</X>
+						<Y>0.5</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882362</R>
+						<G>0.164705887</G>
+						<B>0.207843155</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">1</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<Content name="Image"><url>rbxassetid://196969716</url></Content>
+					<Color3 name="ImageColor3">
+						<R>0.0705882385</R>
+						<G>0.298039228</G>
+						<B>0.90196085</B>
+					</Color3>
+					<Vector2 name="ImageRectOffset">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<Vector2 name="ImageRectSize">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<float name="ImageTransparency">1</float>
+					<int name="LayoutOrder">0</int>
+					<string name="Name">Glow</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.5</XS>
+						<XO>0</XO>
+						<YS>0.5</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="ResampleMode">0</token>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<token name="ScaleType">0</token>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>4</XS>
+						<XO>0</XO>
+						<YS>4</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<Rect2D name="SliceCenter">
+						<min>
+							<X>0</X>
+							<Y>0</Y>
+						</min>
+						<max>
+							<X>0</X>
+							<Y>0</Y>
+						</max>
+					</Rect2D>
+					<float name="SliceScale">1</float>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UDim2 name="TileSize">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">10</int>
+				</Properties>
+			</Item>
+		</Item>
+		<Item class="Frame" referent="RBXDD8A8A23C58A497094C79D9FB83AEF51">
+			<Properties>
+				<bool name="Active">false</bool>
+				<Vector2 name="AnchorPoint">
+					<X>0</X>
+					<Y>0</Y>
+				</Vector2>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<bool name="AutoLocalize">true</bool>
+				<token name="AutomaticSize">0</token>
+				<Color3 name="BackgroundColor3">
+					<R>0.121568635</R>
+					<G>0.121568635</G>
+					<B>0.121568635</B>
+				</Color3>
+				<float name="BackgroundTransparency">0</float>
+				<Color3 name="BorderColor3">
+					<R>0.105882362</R>
+					<G>0.164705887</G>
+					<B>0.207843155</B>
+				</Color3>
+				<token name="BorderMode">0</token>
+				<int name="BorderSizePixel">0</int>
+				<bool name="ClipsDescendants">false</bool>
+				<bool name="Draggable">false</bool>
+				<int name="LayoutOrder">0</int>
+				<string name="Name">AppFrame</string>
+				<Ref name="NextSelectionDown">null</Ref>
+				<Ref name="NextSelectionLeft">null</Ref>
+				<Ref name="NextSelectionRight">null</Ref>
+				<Ref name="NextSelectionUp">null</Ref>
+				<UDim2 name="Position">
+					<XS>0</XS>
+					<XO>0</XO>
+					<YS>0.0210621059</YS>
+					<YO>0</YO>
+				</UDim2>
+				<Ref name="RootLocalizationTable">null</Ref>
+				<float name="Rotation">0</float>
+				<bool name="Selectable">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
+				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
+				<UDim2 name="Size">
+					<XS>1</XS>
+					<XO>0</XO>
+					<YS>0.978937864</YS>
+					<YO>0</YO>
+				</UDim2>
+				<token name="SizeConstraint">0</token>
+				<int64 name="SourceAssetId">-1</int64>
+				<token name="Style">0</token>
+				<BinaryString name="Tags"></BinaryString>
+				<bool name="Visible">true</bool>
+				<int name="ZIndex">1</int>
+			</Properties>
+			<Item class="ImageLabel" referent="RBXB97C404D4C9C4BF2B5894EC199DF4469">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">0</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882362</R>
+						<G>0.164705887</G>
+						<B>0.207843155</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<Content name="Image"><url>rbxassetid://6412285429</url></Content>
+					<Color3 name="ImageColor3">
+						<R>0.0235294141</R>
+						<G>0.0235294141</G>
+						<B>0.0235294141</B>
+					</Color3>
+					<Vector2 name="ImageRectOffset">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<Vector2 name="ImageRectSize">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<float name="ImageTransparency">0.0149999997</float>
+					<int name="LayoutOrder">0</int>
+					<string name="Name">Bkg</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0</XS>
+						<XO>0</XO>
+						<YS>0</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="ResampleMode">0</token>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<token name="ScaleType">4</token>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>1</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<Rect2D name="SliceCenter">
+						<min>
+							<X>0</X>
+							<Y>0</Y>
+						</min>
+						<max>
+							<X>0</X>
+							<Y>0</Y>
+						</max>
+					</Rect2D>
+					<float name="SliceScale">1</float>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UDim2 name="TileSize">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+			</Item>
+			<Item class="Frame" referent="RBXDEDFCBF4307C4354A3F434CDB616AA7B">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0.5</X>
+						<Y>0.5</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>0.149019614</R>
+						<G>0.149019614</G>
+						<B>0.149019614</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882362</R>
+						<G>0.164705887</G>
+						<B>0.207843155</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<int name="LayoutOrder">0</int>
+					<string name="Name">Main</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.5</XS>
+						<XO>0</XO>
+						<YS>0.5</YS>
+						<YO>0</YO>
+					</UDim2>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>1.5</XS>
+						<XO>0</XO>
+						<YS>1.5</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<token name="Style">0</token>
+					<BinaryString name="Tags"></BinaryString>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="UIGridLayout" referent="RBX1CE5B42AD6C648B69E8DEAEBB4597E79">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<UDim2 name="CellPadding">
+							<XS>0</XS>
+							<XO>0</XO>
+							<YS>0</YS>
+							<YO>0</YO>
+						</UDim2>
+						<UDim2 name="CellSize">
+							<XS>0</XS>
+							<XO>12</XO>
+							<YS>0</YS>
+							<YO>12</YO>
+						</UDim2>
+						<token name="FillDirection">0</token>
+						<int name="FillDirectionMaxCells">0</int>
+						<token name="HorizontalAlignment">1</token>
+						<string name="Name">UIGridLayout</string>
+						<token name="SortOrder">2</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="StartCorner">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<token name="VerticalAlignment">1</token>
+					</Properties>
+				</Item>
+				<Item class="LocalScript" referent="RBX09D1ADCDC2274034B2A7CF5352F39720">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="Disabled">false</bool>
+						<Content name="LinkedSource"><null></null></Content>
+						<string name="Name">GameOfLife</string>
+						<token name="RunContext">0</token>
+						<string name="ScriptGuid">{D1063213-797A-41A6-85B0-6AD668FB07A2}</string>
+						<ProtectedString name="Source"></ProtectedString>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="TextLabel" referent="RBXFEA64AD1EDE1431FA822E117E7224CD9">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882362</R>
+						<G>0.164705887</G>
+						<B>0.207843155</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">1</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Ubuntu.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+					</Font>
+					<int name="LayoutOrder">0</int>
+					<float name="LineHeight">1</float>
+					<int name="MaxVisibleGraphemes">-1</int>
+					<string name="Name">Steps</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.0200000219</XS>
+						<XO>0</XO>
+						<YS>0.0401534475</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="RichText">false</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>0.270658672</XS>
+						<XO>0</XO>
+						<YS>0.147228554</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<string name="Text">3 Steps</string>
+					<Color3 name="TextColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<bool name="TextScaled">false</bool>
+					<float name="TextSize">14</float>
+					<Color3 name="TextStrokeColor3">
+						<R>0</R>
+						<G>0</G>
+						<B>0</B>
+					</Color3>
+					<float name="TextStrokeTransparency">1</float>
+					<float name="TextTransparency">0</float>
+					<token name="TextTruncate">0</token>
+					<bool name="TextWrapped">false</bool>
+					<token name="TextXAlignment">0</token>
+					<token name="TextYAlignment">0</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="UIStroke" referent="RBXBF6F590995AF4FB7A15EDE69B3EB8991">
+					<Properties>
+						<token name="ApplyStrokeMode">0</token>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<Color3 name="Color">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<bool name="Enabled">true</bool>
+						<token name="LineJoinMode">0</token>
+						<string name="Name">UIStroke</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<float name="Thickness">3.29999995</float>
+						<float name="Transparency">0</float>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="TextLabel" referent="RBXD2B970D7C0154E4E8D8DCC991E2A79E8">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882362</R>
+						<G>0.164705887</G>
+						<B>0.207843155</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">1</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/Ubuntu.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+					</Font>
+					<int name="LayoutOrder">0</int>
+					<float name="LineHeight">1</float>
+					<int name="MaxVisibleGraphemes">-1</int>
+					<string name="Name">AliveCells</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.687915862</XS>
+						<XO>0</XO>
+						<YS>0.0401534475</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="RichText">false</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>0.270658672</XS>
+						<XO>0</XO>
+						<YS>0.147228554</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<string name="Text">30 Alive Cells</string>
+					<Color3 name="TextColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<bool name="TextScaled">false</bool>
+					<float name="TextSize">14</float>
+					<Color3 name="TextStrokeColor3">
+						<R>0</R>
+						<G>0</G>
+						<B>0</B>
+					</Color3>
+					<float name="TextStrokeTransparency">1</float>
+					<float name="TextTransparency">0</float>
+					<token name="TextTruncate">0</token>
+					<bool name="TextWrapped">false</bool>
+					<token name="TextXAlignment">1</token>
+					<token name="TextYAlignment">0</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="UIStroke" referent="RBXDF46AF43758540A088DEC1ADD3702370">
+					<Properties>
+						<token name="ApplyStrokeMode">0</token>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<Color3 name="Color">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<bool name="Enabled">true</bool>
+						<token name="LineJoinMode">0</token>
+						<string name="Name">UIStroke</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<float name="Thickness">3.29999995</float>
+						<float name="Transparency">0</float>
+					</Properties>
+				</Item>
+			</Item>
+		</Item>
+	</Item>
+</roblox>

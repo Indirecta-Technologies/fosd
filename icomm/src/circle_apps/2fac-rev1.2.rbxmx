@@ -1,0 +1,2678 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="ModuleScript" referent="RBX3DA0781EAB2A4C8F9CA84DFFBF6AD0F5">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<Content name="LinkedSource"><null></null></Content>
+			<string name="Name">2fac</string>
+			<string name="ScriptGuid">{3FD420B0-8B02-400F-937A-AFB43B787181}</string>
+			<ProtectedString name="Source"><![CDATA[--[[
+
+  `/shdmmmmmmmmmd-`ymmmddyo:`       //                sm- /h/                        --
+`yNMMMMMMMMMMMMm-.dMMMMMMMMMN+     `MN  `-:::.`   .-:-hM- -o-  .-::.  .::-.   `.:::` MN--. `-::-.
+yMMMMMMMMMMMMMd.:NMMMMMMMMMMMM+    `MN  yMs+oNh  oNy++mM- +Mo -Mm++:`hmo+yN+ .dmo++- MNoo/ `o+odN:
+yMMMMMMMMMMMMy`+NMMMMMMMMMMMMM+    `MN  yM:  dM. MN   yM- +Mo -Mh   /Mmss    sM+     MN    +h ohMo
+`yNMMMMMMMMMo`sMMMMMMMMMMMMMNo     `MN  yM:  dM. oNy//dM- +Mo -Mh   `dNs++o. -mm+//- dM+/+ mN+/sMo
+  `/shddddd/ odddddddddddho:`       ::  .:`  -:   `:///-` .:. `:-     .://:`  `-///. `-//: `-///:.
+
+Indirecta Technologies, Licensed under the "Gnu General Public License v3"
+
+Group Link: https://www.roblox.com/groups/5717887/Indirecta
+
+]]
+
+local module = {
+	-- iComm Circle App
+	["AppInfo"] =  {
+		["Icon"] = "🔐";
+		["Name"] = "2FA";
+		["SoftKeys"] = {"","",""};
+		["Revision"] = "1.2";
+	};
+	["Codes"] = {
+		[1] = {
+			["secret"] = "2FASTEST";
+			["name"] = "MeBank";
+			["icon"] = "🏦";
+		};
+	};
+}
+
+function module:Init(name, value)
+	if not self[name] and value then self[name] = value else return false end
+	return true
+end
+
+function module:Open()
+
+	self:Init("AppFrame", script:FindFirstChild("AppFrame"))
+	self["AppFrame"].Name = self["AppInfo"]["Name"]
+	self["AppFrame"].Parent = self.deps["screen"].components["mainscreen"]
+	self.deps["screen"].components.statusbar.Macro.Text = self["AppInfo"]["Name"]
+	self.deps["screen"].showOnly(self["AppInfo"]["Name"])
+	self.deps["screen"].bottom_bar(table.unpack(self["AppInfo"]["SoftKeys"]))
+
+	self:Init("Codes_Grid", self["AppFrame"]["Codes"])
+	self:Init("Code_Template", script["Frame"])
+	self:Init("otp", require(script["otp"]))
+	self:Init("totp", require(script["totp"]))
+
+
+	--[[♥local function generate_totp(secret, interval, digits)
+		digits = digits or 6
+		local epoch = os.time()
+		local time = math.floor(epoch / interval)
+		local digest = tonumber(self["SHA1"](secret .. string.format("%016x", time)), 16)
+		local offset = string.byte(digest, 20) % 16 + 1
+		local binary = string.sub(digest, offset, offset + 3)
+		local code = tonumber(binary, 16) % 10 ^ digits
+		return string.format("%0"..digits.."d", code), interval - (epoch % interval), math.round((1-(epoch % interval)/interval)*100)/100
+	end]]
+
+	self:Init("selected_code", "");
+
+	local ug, we = self["AppFrame"]["Codes"]["UIGridLayout"]:Clone(), self["AppFrame"]["Codes"]["UIPadding"]:Clone();
+	self["AppFrame"]["Codes"]:ClearAllChildren();
+	ug.Parent = self["AppFrame"]["Codes"]; we.Parent = self["AppFrame"]["Codes"];
+
+	for i,v in self["Codes"] do
+		local clone = self["Code_Template"]:Clone()
+		clone.Icon.Text = v["icon"]
+		clone.TextLabel.Text = v["name"]
+		clone.Name = "_"..v["name"]
+
+		task.spawn(function()
+			self["otp"].type = "totp"
+			local tdata = self["otp"].new(v["secret"], 6, "SHA1", 30)
+
+			while self["AppFrame"].Visible do
+				local code, left, perc = self["totp"].now(tdata)
+				clone.Progress.Percentage.Value = perc * 100
+				if self["selected_code"] == clone.Name then
+					self["AppFrame"]["Code"].Code.Text = code
+					self["AppFrame"]["Code"].Icon.Text = v["icon"]
+					self["AppFrame"]["Code"].Title.Text = v["name"]
+
+					self["AppFrame"]["Code"].Progress.Value.Size = UDim2.fromScale(perc, 1)
+				end
+				wait(1)
+			end
+		end)
+
+		clone.Parent = self["Codes_Grid"]
+
+		clone.MouseButton1Click:Connect(function()
+			self["selected_code"] = clone.Name
+			self["AppFrame"]["Code"].Visible = true
+		end)
+	end
+
+end
+
+function module:Activate(deps, k, cc)
+	-- Scrolling Frame UP/DOWN Smooth Navigation
+	if (k == "Back") then
+		if self["AppFrame"]["Code"].Visible == true then
+			self["selected_code"] = "";
+			self["AppFrame"]["Code"].Visible = false
+		else
+			-- close app
+		end
+	end
+	if (k == "UP") then
+		if self["Codes_Grid"]:IsA("ScrollingFrame") and self["Codes_Grid"]:GetAttribute("PageIndex") then
+			self.deps["screen"].scrollingPageUp(self["Codes_Grid"])
+			return
+		end
+	end
+	if (k == "DOWN") then
+		if self["Codes_Grid"]:IsA("ScrollingFrame") and self["Codes_Grid"]:GetAttribute("PageIndex") then
+			self.deps["screen"].scrollingPageDown(self["Codes_Grid"])
+			return
+		end
+	end
+end
+
+return module
+
+]]></ProtectedString>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+		</Properties>
+		<Item class="Frame" referent="RBXAC9F4281DE1546F4B76575E0F8ABCCD5">
+			<Properties>
+				<bool name="Active">false</bool>
+				<Vector2 name="AnchorPoint">
+					<X>0</X>
+					<Y>0</Y>
+				</Vector2>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<bool name="AutoLocalize">true</bool>
+				<token name="AutomaticSize">0</token>
+				<Color3 name="BackgroundColor3">
+					<R>0.121568635</R>
+					<G>0.121568635</G>
+					<B>0.121568635</B>
+				</Color3>
+				<float name="BackgroundTransparency">0</float>
+				<Color3 name="BorderColor3">
+					<R>0.105882362</R>
+					<G>0.164705887</G>
+					<B>0.207843155</B>
+				</Color3>
+				<token name="BorderMode">0</token>
+				<int name="BorderSizePixel">0</int>
+				<bool name="ClipsDescendants">true</bool>
+				<bool name="Draggable">false</bool>
+				<int name="LayoutOrder">0</int>
+				<string name="Name">AppFrame</string>
+				<Ref name="NextSelectionDown">null</Ref>
+				<Ref name="NextSelectionLeft">null</Ref>
+				<Ref name="NextSelectionRight">null</Ref>
+				<Ref name="NextSelectionUp">null</Ref>
+				<UDim2 name="Position">
+					<XS>0</XS>
+					<XO>0</XO>
+					<YS>0.0210621059</YS>
+					<YO>0</YO>
+				</UDim2>
+				<Ref name="RootLocalizationTable">null</Ref>
+				<float name="Rotation">0</float>
+				<bool name="Selectable">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
+				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
+				<UDim2 name="Size">
+					<XS>1</XS>
+					<XO>0</XO>
+					<YS>0.978937864</YS>
+					<YO>0</YO>
+				</UDim2>
+				<token name="SizeConstraint">0</token>
+				<int64 name="SourceAssetId">-1</int64>
+				<token name="Style">0</token>
+				<BinaryString name="Tags"></BinaryString>
+				<bool name="Visible">true</bool>
+				<int name="ZIndex">1</int>
+			</Properties>
+			<Item class="Frame" referent="RBX1A65EE6AA6404AE9A3997E91F1396915">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>0.0666666701</R>
+						<G>0.0666666701</G>
+						<B>0.0666666701</B>
+					</Color3>
+					<float name="BackgroundTransparency">0</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882362</R>
+						<G>0.164705887</G>
+						<B>0.207843155</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<int name="LayoutOrder">0</int>
+					<string name="Name">Code</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0</XS>
+						<XO>0</XO>
+						<YS>0</YS>
+						<YO>0</YO>
+					</UDim2>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<token name="Style">0</token>
+					<BinaryString name="Tags"></BinaryString>
+					<bool name="Visible">false</bool>
+					<int name="ZIndex">2</int>
+				</Properties>
+				<Item class="TextLabel" referent="RBX454CD8DB71204C3E99F416F038354BA8">
+					<Properties>
+						<bool name="Active">false</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0.5</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="BackgroundTransparency">1</float>
+						<Color3 name="BorderColor3">
+							<R>0.105882362</R>
+							<G>0.164705887</G>
+							<B>0.207843155</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/Inconsolata.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+						</Font>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<string name="Name">Code</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0.5</XS>
+							<XO>0</XO>
+							<YS>0.434993446</YS>
+							<YO>0</YO>
+						</UDim2>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0.873092532</XS>
+							<XO>0</XO>
+							<YS>0.334610343</YS>
+							<YO>0</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">124 589</string>
+						<Color3 name="TextColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<bool name="TextScaled">false</bool>
+						<float name="TextSize">47</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">false</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">2</int>
+					</Properties>
+				</Item>
+				<Item class="TextLabel" referent="RBX7DE49C573DA0494F9A7C5EBA55B47F6B">
+					<Properties>
+						<bool name="Active">false</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0.5</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="BackgroundTransparency">1</float>
+						<Color3 name="BorderColor3">
+							<R>0.105882362</R>
+							<G>0.164705887</G>
+							<B>0.207843155</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/Ubuntu.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+						</Font>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<string name="Name">Title</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0.495634526</XS>
+							<XO>0</XO>
+							<YS>0.260996073</YS>
+							<YO>0</YO>
+						</UDim2>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0.873092532</XS>
+							<XO>0</XO>
+							<YS>0.200766206</YS>
+							<YO>0</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">MeBank</string>
+						<Color3 name="TextColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<bool name="TextScaled">false</bool>
+						<float name="TextSize">25</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">false</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">2</int>
+					</Properties>
+				</Item>
+				<Item class="Frame" referent="RBXDBB94CA37B814A279716929B45CEEB8E">
+					<Properties>
+						<bool name="Active">false</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0.5</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>0.0470588282</R>
+							<G>0.0470588282</G>
+							<B>0.0470588282</B>
+						</Color3>
+						<float name="BackgroundTransparency">0</float>
+						<Color3 name="BorderColor3">
+							<R>0.105882362</R>
+							<G>0.164705887</G>
+							<B>0.207843155</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="Draggable">false</bool>
+						<int name="LayoutOrder">0</int>
+						<string name="Name">Progress</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0.502486467</XS>
+							<XO>0</XO>
+							<YS>0.816449225</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0.701912224</XS>
+							<XO>0</XO>
+							<YS>0.0736140758</YS>
+							<YO>0</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">2</int>
+					</Properties>
+					<Item class="UICorner" referent="RBXDEE9F3D20B044597992C2EAA7364CC40">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<UDim name="CornerRadius">
+								<S>0</S>
+								<O>8</O>
+							</UDim>
+							<string name="Name">UICorner</string>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+					</Item>
+					<Item class="Frame" referent="RBXA4F3E61E5F90418FA686EA4013738A83">
+						<Properties>
+							<bool name="Active">false</bool>
+							<Vector2 name="AnchorPoint">
+								<X>0</X>
+								<Y>0</Y>
+							</Vector2>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<bool name="AutoLocalize">true</bool>
+							<token name="AutomaticSize">0</token>
+							<Color3 name="BackgroundColor3">
+								<R>0.0705882385</R>
+								<G>0.298039228</G>
+								<B>0.90196085</B>
+							</Color3>
+							<float name="BackgroundTransparency">0</float>
+							<Color3 name="BorderColor3">
+								<R>0.105882362</R>
+								<G>0.164705887</G>
+								<B>0.207843155</B>
+							</Color3>
+							<token name="BorderMode">0</token>
+							<int name="BorderSizePixel">1</int>
+							<bool name="ClipsDescendants">false</bool>
+							<bool name="Draggable">false</bool>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">Value</string>
+							<Ref name="NextSelectionDown">null</Ref>
+							<Ref name="NextSelectionLeft">null</Ref>
+							<Ref name="NextSelectionRight">null</Ref>
+							<Ref name="NextSelectionUp">null</Ref>
+							<UDim2 name="Position">
+								<XS>0</XS>
+								<XO>0</XO>
+								<YS>0</YS>
+								<YO>0</YO>
+							</UDim2>
+							<Ref name="RootLocalizationTable">null</Ref>
+							<float name="Rotation">0</float>
+							<bool name="Selectable">false</bool>
+							<token name="SelectionBehaviorDown">0</token>
+							<token name="SelectionBehaviorLeft">0</token>
+							<token name="SelectionBehaviorRight">0</token>
+							<token name="SelectionBehaviorUp">0</token>
+							<bool name="SelectionGroup">false</bool>
+							<Ref name="SelectionImageObject">null</Ref>
+							<int name="SelectionOrder">0</int>
+							<UDim2 name="Size">
+								<XS>0.449999988</XS>
+								<XO>0</XO>
+								<YS>1</YS>
+								<YO>0</YO>
+							</UDim2>
+							<token name="SizeConstraint">0</token>
+							<int64 name="SourceAssetId">-1</int64>
+							<token name="Style">0</token>
+							<BinaryString name="Tags"></BinaryString>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+						<Item class="UICorner" referent="RBXED7CC78087F142B1BF6E05D302A2AA3B">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<UDim name="CornerRadius">
+									<S>0</S>
+									<O>8</O>
+								</UDim>
+								<string name="Name">UICorner</string>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+							</Properties>
+						</Item>
+					</Item>
+				</Item>
+				<Item class="TextLabel" referent="RBXA12AE18E22FD439FBFF94F21D1FE01CA">
+					<Properties>
+						<bool name="Active">false</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0.5</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="BackgroundTransparency">1</float>
+						<Color3 name="BorderColor3">
+							<R>0.105882362</R>
+							<G>0.164705887</G>
+							<B>0.207843155</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">false</bool>
+						<bool name="Draggable">false</bool>
+						<Font name="FontFace">
+							<Family><url>rbxasset://fonts/families/Ubuntu.json</url></Family>
+							<Weight>400</Weight>
+							<Style>Normal</Style>
+						</Font>
+						<int name="LayoutOrder">0</int>
+						<float name="LineHeight">1</float>
+						<int name="MaxVisibleGraphemes">-1</int>
+						<string name="Name">Icon</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0.5</XS>
+							<XO>0</XO>
+							<YS>0.0200766213</YS>
+							<YO>0</YO>
+						</UDim2>
+						<bool name="RichText">false</bool>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0.873092532</XS>
+							<XO>0</XO>
+							<YS>0.247611657</YS>
+							<YO>0</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<string name="Text">&#240;&#159;&#143;&#166;</string>
+						<Color3 name="TextColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<bool name="TextScaled">false</bool>
+						<float name="TextSize">45</float>
+						<Color3 name="TextStrokeColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<float name="TextStrokeTransparency">1</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextTruncate">0</token>
+						<bool name="TextWrapped">false</bool>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">2</int>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="ScrollingFrame" referent="RBXBD6B39C6208C48098B05290E67455C29">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize">AQAAAAkAAABQYWdlSW5kZXgGAAAAAAAA8D8=</BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticCanvasSize">0</token>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882362</R>
+						<G>0.164705887</G>
+						<B>0.207843155</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<Content name="BottomImage"><url>rbxasset://textures/ui/Scroll/scroll-bottom.png</url></Content>
+					<Vector2 name="CanvasPosition">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<UDim2 name="CanvasSize">
+						<XS>0</XS>
+						<XO>0</XO>
+						<YS>2</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<token name="ElasticBehavior">0</token>
+					<token name="HorizontalScrollBarInset">0</token>
+					<int name="LayoutOrder">0</int>
+					<Content name="MidImage"><url>rbxasset://textures/ui/Scroll/scroll-middle.png</url></Content>
+					<string name="Name">Codes</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0</XS>
+						<XO>0</XO>
+						<YS>0</YS>
+						<YO>0</YO>
+					</UDim2>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<Color3 name="ScrollBarImageColor3">
+						<R>0.0784313753</R>
+						<G>0.0784313753</G>
+						<B>0.0784313753</B>
+					</Color3>
+					<float name="ScrollBarImageTransparency">0</float>
+					<int name="ScrollBarThickness">7</int>
+					<token name="ScrollingDirection">4</token>
+					<bool name="ScrollingEnabled">true</bool>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>1</XS>
+						<XO>0</XO>
+						<YS>1</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<Content name="TopImage"><url>rbxasset://textures/ui/Scroll/scroll-top.png</url></Content>
+					<token name="VerticalScrollBarInset">0</token>
+					<token name="VerticalScrollBarPosition">0</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="UIGridLayout" referent="RBX2DB2D15812B44249A0AF75CA97FD66FB">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<UDim2 name="CellPadding">
+							<XS>0</XS>
+							<XO>5</XO>
+							<YS>0</YS>
+							<YO>5</YO>
+						</UDim2>
+						<UDim2 name="CellSize">
+							<XS>0</XS>
+							<XO>68</XO>
+							<YS>0</YS>
+							<YO>100</YO>
+						</UDim2>
+						<token name="FillDirection">0</token>
+						<int name="FillDirectionMaxCells">0</int>
+						<token name="HorizontalAlignment">1</token>
+						<string name="Name">UIGridLayout</string>
+						<token name="SortOrder">2</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="StartCorner">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<token name="VerticalAlignment">1</token>
+					</Properties>
+				</Item>
+				<Item class="UIPadding" referent="RBX7E9105FEF5D8435FAF8180C245416E7D">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<string name="Name">UIPadding</string>
+						<UDim name="PaddingBottom">
+							<S>0</S>
+							<O>0</O>
+						</UDim>
+						<UDim name="PaddingLeft">
+							<S>0</S>
+							<O>5</O>
+						</UDim>
+						<UDim name="PaddingRight">
+							<S>0</S>
+							<O>0</O>
+						</UDim>
+						<UDim name="PaddingTop">
+							<S>0</S>
+							<O>5</O>
+						</UDim>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="LocalScript" referent="RBX0E4EC2C1A5694EB1B145EFF84EF450DB">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="Disabled">false</bool>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">AutoScroll</string>
+					<token name="RunContext">0</token>
+					<string name="ScriptGuid">{DC7DF499-C2D7-48D5-BEC1-D8226510BFA5}</string>
+					<ProtectedString name="Source"><![CDATA[
+if not script.Parent["Codes"]:IsA("ScrollingFrame") then script:Destroy() end;
+
+function scroll(max)
+	local Info = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	local newCP = Vector2.new(0,max)
+	local Tween = game:GetService("TweenService"):Create(script.Parent["Codes"], Info, {CanvasPosition = newCP})
+	Tween:Play()
+end
+
+function auto()
+	local max = script.Parent["Codes"].CanvasSize.Y.Offset
+	scroll(max)
+end
+
+local layout = script.Parent["Codes"].UIGridLayout
+layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	local absoluteContentSize = layout.AbsoluteContentSize
+	script.Parent["Codes"].CanvasSize = UDim2.new(0, 0, 0, absoluteContentSize.Y)
+	auto()
+end)
+
+
+auto()
+
+]]></ProtectedString>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+		</Item>
+		<Item class="TextButton" referent="RBXD47AD632D11F4D629774F484267C77FF">
+			<Properties>
+				<bool name="Active">false</bool>
+				<Vector2 name="AnchorPoint">
+					<X>0</X>
+					<Y>0</Y>
+				</Vector2>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<bool name="AutoButtonColor">true</bool>
+				<bool name="AutoLocalize">true</bool>
+				<token name="AutomaticSize">0</token>
+				<Color3 name="BackgroundColor3">
+					<R>0.0784313753</R>
+					<G>0.0784313753</G>
+					<B>0.0784313753</B>
+				</Color3>
+				<float name="BackgroundTransparency">0.449999988</float>
+				<Color3 name="BorderColor3">
+					<R>0.105882362</R>
+					<G>0.164705887</G>
+					<B>0.207843155</B>
+				</Color3>
+				<token name="BorderMode">0</token>
+				<int name="BorderSizePixel">1</int>
+				<bool name="ClipsDescendants">false</bool>
+				<bool name="Draggable">false</bool>
+				<Font name="FontFace">
+					<Family><url>rbxasset://fonts/families/LegacyArial.json</url></Family>
+					<Weight>400</Weight>
+					<Style>Normal</Style>
+					<CachedFaceId><url>rbxasset://fonts/arial.ttf</url></CachedFaceId>
+				</Font>
+				<int name="LayoutOrder">0</int>
+				<float name="LineHeight">1</float>
+				<int name="MaxVisibleGraphemes">-1</int>
+				<bool name="Modal">false</bool>
+				<string name="Name">Frame</string>
+				<Ref name="NextSelectionDown">null</Ref>
+				<Ref name="NextSelectionLeft">null</Ref>
+				<Ref name="NextSelectionRight">null</Ref>
+				<Ref name="NextSelectionUp">null</Ref>
+				<UDim2 name="Position">
+					<XS>0</XS>
+					<XO>0</XO>
+					<YS>0</YS>
+					<YO>0</YO>
+				</UDim2>
+				<bool name="RichText">false</bool>
+				<Ref name="RootLocalizationTable">null</Ref>
+				<float name="Rotation">0</float>
+				<bool name="Selectable">false</bool>
+				<bool name="Selected">false</bool>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
+				<Ref name="SelectionImageObject">null</Ref>
+				<int name="SelectionOrder">0</int>
+				<UDim2 name="Size">
+					<XS>0</XS>
+					<XO>100</XO>
+					<YS>0</YS>
+					<YO>100</YO>
+				</UDim2>
+				<token name="SizeConstraint">0</token>
+				<int64 name="SourceAssetId">-1</int64>
+				<token name="Style">0</token>
+				<BinaryString name="Tags"></BinaryString>
+				<string name="Text">Button</string>
+				<Color3 name="TextColor3">
+					<R>0.105882362</R>
+					<G>0.164705887</G>
+					<B>0.207843155</B>
+				</Color3>
+				<bool name="TextScaled">false</bool>
+				<float name="TextSize">8</float>
+				<Color3 name="TextStrokeColor3">
+					<R>0</R>
+					<G>0</G>
+					<B>0</B>
+				</Color3>
+				<float name="TextStrokeTransparency">1</float>
+				<float name="TextTransparency">0</float>
+				<token name="TextTruncate">0</token>
+				<bool name="TextWrapped">false</bool>
+				<token name="TextXAlignment">2</token>
+				<token name="TextYAlignment">1</token>
+				<bool name="Visible">true</bool>
+				<int name="ZIndex">1</int>
+			</Properties>
+			<Item class="UICorner" referent="RBX78E40900615D424AB3D32BD6BF439FBE">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<UDim name="CornerRadius">
+						<S>0</S>
+						<O>5</O>
+					</UDim>
+					<string name="Name">UICorner</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="Frame" referent="RBXE251F02261F44BD19D1215FA3530EC25">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0.5</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0</R>
+						<G>0</G>
+						<B>0</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">0</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<int name="LayoutOrder">0</int>
+					<string name="Name">Progress</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.5</XS>
+						<XO>0</XO>
+						<YS>0.100000001</YS>
+						<YO>0</YO>
+					</UDim2>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>0.5</XS>
+						<XO>0</XO>
+						<YS>0.5</YS>
+						<YO>0</YO>
+					</UDim2>
+					<token name="SizeConstraint">2</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<token name="Style">0</token>
+					<BinaryString name="Tags"></BinaryString>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="Frame" referent="RBX65345138E0564D659586FC4C220387FA">
+					<Properties>
+						<bool name="Active">false</bool>
+						<Vector2 name="AnchorPoint">
+							<X>0</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="BackgroundTransparency">1</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">0</int>
+						<bool name="ClipsDescendants">true</bool>
+						<bool name="Draggable">false</bool>
+						<int name="LayoutOrder">0</int>
+						<string name="Name">Frame1</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>0</XS>
+							<XO>0</XO>
+							<YS>0</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0.5</XS>
+							<XO>0</XO>
+							<YS>1</YS>
+							<YO>0</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="ImageLabel" referent="RBXBA2B8C2F08D6417B8AC2BAD2D6779A2F">
+						<Properties>
+							<bool name="Active">false</bool>
+							<Vector2 name="AnchorPoint">
+								<X>0</X>
+								<Y>0</Y>
+							</Vector2>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<bool name="AutoLocalize">true</bool>
+							<token name="AutomaticSize">0</token>
+							<Color3 name="BackgroundColor3">
+								<R>1</R>
+								<G>1</G>
+								<B>1</B>
+							</Color3>
+							<float name="BackgroundTransparency">1</float>
+							<Color3 name="BorderColor3">
+								<R>0</R>
+								<G>0</G>
+								<B>0</B>
+							</Color3>
+							<token name="BorderMode">0</token>
+							<int name="BorderSizePixel">0</int>
+							<bool name="ClipsDescendants">false</bool>
+							<bool name="Draggable">false</bool>
+							<Content name="Image"><url>rbxassetid://3587367081</url></Content>
+							<Color3 name="ImageColor3">
+								<R>1</R>
+								<G>1</G>
+								<B>1</B>
+							</Color3>
+							<Vector2 name="ImageRectOffset">
+								<X>0</X>
+								<Y>0</Y>
+							</Vector2>
+							<Vector2 name="ImageRectSize">
+								<X>0</X>
+								<Y>0</Y>
+							</Vector2>
+							<float name="ImageTransparency">0.5</float>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">ImageLabel</string>
+							<Ref name="NextSelectionDown">null</Ref>
+							<Ref name="NextSelectionLeft">null</Ref>
+							<Ref name="NextSelectionRight">null</Ref>
+							<Ref name="NextSelectionUp">null</Ref>
+							<UDim2 name="Position">
+								<XS>0</XS>
+								<XO>0</XO>
+								<YS>0</YS>
+								<YO>0</YO>
+							</UDim2>
+							<token name="ResampleMode">0</token>
+							<Ref name="RootLocalizationTable">null</Ref>
+							<float name="Rotation">0</float>
+							<token name="ScaleType">0</token>
+							<bool name="Selectable">false</bool>
+							<token name="SelectionBehaviorDown">0</token>
+							<token name="SelectionBehaviorLeft">0</token>
+							<token name="SelectionBehaviorRight">0</token>
+							<token name="SelectionBehaviorUp">0</token>
+							<bool name="SelectionGroup">false</bool>
+							<Ref name="SelectionImageObject">null</Ref>
+							<int name="SelectionOrder">0</int>
+							<UDim2 name="Size">
+								<XS>2</XS>
+								<XO>0</XO>
+								<YS>1</YS>
+								<YO>0</YO>
+							</UDim2>
+							<token name="SizeConstraint">0</token>
+							<Rect2D name="SliceCenter">
+								<min>
+									<X>0</X>
+									<Y>0</Y>
+								</min>
+								<max>
+									<X>0</X>
+									<Y>0</Y>
+								</max>
+							</Rect2D>
+							<float name="SliceScale">1</float>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+							<UDim2 name="TileSize">
+								<XS>1</XS>
+								<XO>0</XO>
+								<YS>1</YS>
+								<YO>0</YO>
+							</UDim2>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+						<Item class="UIGradient" referent="RBX36C4994BFC2A4F2E877AD6EFC484C766">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<ColorSequence name="Color">0 1 1 1 0 1 1 1 1 0 </ColorSequence>
+								<bool name="Enabled">true</bool>
+								<string name="Name">UIGradient</string>
+								<Vector2 name="Offset">
+									<X>0</X>
+									<Y>0</Y>
+								</Vector2>
+								<float name="Rotation">0</float>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+								<NumberSequence name="Transparency">0 0 0 0.5 0 0 0.501 1 0 1 1 0 </NumberSequence>
+							</Properties>
+						</Item>
+					</Item>
+				</Item>
+				<Item class="Frame" referent="RBX95CF8DF268294D3ABAC8072F090315B6">
+					<Properties>
+						<bool name="Active">false</bool>
+						<Vector2 name="AnchorPoint">
+							<X>1</X>
+							<Y>0</Y>
+						</Vector2>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<bool name="AutoLocalize">true</bool>
+						<token name="AutomaticSize">0</token>
+						<Color3 name="BackgroundColor3">
+							<R>1</R>
+							<G>1</G>
+							<B>1</B>
+						</Color3>
+						<float name="BackgroundTransparency">1</float>
+						<Color3 name="BorderColor3">
+							<R>0</R>
+							<G>0</G>
+							<B>0</B>
+						</Color3>
+						<token name="BorderMode">0</token>
+						<int name="BorderSizePixel">0</int>
+						<bool name="ClipsDescendants">true</bool>
+						<bool name="Draggable">false</bool>
+						<int name="LayoutOrder">0</int>
+						<string name="Name">Frame2</string>
+						<Ref name="NextSelectionDown">null</Ref>
+						<Ref name="NextSelectionLeft">null</Ref>
+						<Ref name="NextSelectionRight">null</Ref>
+						<Ref name="NextSelectionUp">null</Ref>
+						<UDim2 name="Position">
+							<XS>1</XS>
+							<XO>0</XO>
+							<YS>0</YS>
+							<YO>0</YO>
+						</UDim2>
+						<Ref name="RootLocalizationTable">null</Ref>
+						<float name="Rotation">0</float>
+						<bool name="Selectable">false</bool>
+						<token name="SelectionBehaviorDown">0</token>
+						<token name="SelectionBehaviorLeft">0</token>
+						<token name="SelectionBehaviorRight">0</token>
+						<token name="SelectionBehaviorUp">0</token>
+						<bool name="SelectionGroup">false</bool>
+						<Ref name="SelectionImageObject">null</Ref>
+						<int name="SelectionOrder">0</int>
+						<UDim2 name="Size">
+							<XS>0.5</XS>
+							<XO>0</XO>
+							<YS>1</YS>
+							<YO>0</YO>
+						</UDim2>
+						<token name="SizeConstraint">0</token>
+						<int64 name="SourceAssetId">-1</int64>
+						<token name="Style">0</token>
+						<BinaryString name="Tags"></BinaryString>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="ImageLabel" referent="RBX6065E707621847F3975573A5DEB54CD8">
+						<Properties>
+							<bool name="Active">false</bool>
+							<Vector2 name="AnchorPoint">
+								<X>0</X>
+								<Y>0</Y>
+							</Vector2>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<bool name="AutoLocalize">true</bool>
+							<token name="AutomaticSize">0</token>
+							<Color3 name="BackgroundColor3">
+								<R>1</R>
+								<G>1</G>
+								<B>1</B>
+							</Color3>
+							<float name="BackgroundTransparency">1</float>
+							<Color3 name="BorderColor3">
+								<R>0</R>
+								<G>0</G>
+								<B>0</B>
+							</Color3>
+							<token name="BorderMode">0</token>
+							<int name="BorderSizePixel">0</int>
+							<bool name="ClipsDescendants">false</bool>
+							<bool name="Draggable">false</bool>
+							<Content name="Image"><url>rbxassetid://3587367081</url></Content>
+							<Color3 name="ImageColor3">
+								<R>1</R>
+								<G>1</G>
+								<B>1</B>
+							</Color3>
+							<Vector2 name="ImageRectOffset">
+								<X>0</X>
+								<Y>0</Y>
+							</Vector2>
+							<Vector2 name="ImageRectSize">
+								<X>0</X>
+								<Y>0</Y>
+							</Vector2>
+							<float name="ImageTransparency">0.5</float>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">ImageLabel</string>
+							<Ref name="NextSelectionDown">null</Ref>
+							<Ref name="NextSelectionLeft">null</Ref>
+							<Ref name="NextSelectionRight">null</Ref>
+							<Ref name="NextSelectionUp">null</Ref>
+							<UDim2 name="Position">
+								<XS>-1</XS>
+								<XO>0</XO>
+								<YS>0</YS>
+								<YO>0</YO>
+							</UDim2>
+							<token name="ResampleMode">0</token>
+							<Ref name="RootLocalizationTable">null</Ref>
+							<float name="Rotation">0</float>
+							<token name="ScaleType">0</token>
+							<bool name="Selectable">false</bool>
+							<token name="SelectionBehaviorDown">0</token>
+							<token name="SelectionBehaviorLeft">0</token>
+							<token name="SelectionBehaviorRight">0</token>
+							<token name="SelectionBehaviorUp">0</token>
+							<bool name="SelectionGroup">false</bool>
+							<Ref name="SelectionImageObject">null</Ref>
+							<int name="SelectionOrder">0</int>
+							<UDim2 name="Size">
+								<XS>2</XS>
+								<XO>0</XO>
+								<YS>1</YS>
+								<YO>0</YO>
+							</UDim2>
+							<token name="SizeConstraint">0</token>
+							<Rect2D name="SliceCenter">
+								<min>
+									<X>0</X>
+									<Y>0</Y>
+								</min>
+								<max>
+									<X>0</X>
+									<Y>0</Y>
+								</max>
+							</Rect2D>
+							<float name="SliceScale">1</float>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+							<UDim2 name="TileSize">
+								<XS>1</XS>
+								<XO>0</XO>
+								<YS>1</YS>
+								<YO>0</YO>
+							</UDim2>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+						<Item class="UIGradient" referent="RBX6FFBFB82B0894D47B7B2DF5B1B449B75">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<ColorSequence name="Color">0 1 1 1 0 1 1 1 1 0 </ColorSequence>
+								<bool name="Enabled">true</bool>
+								<string name="Name">UIGradient</string>
+								<Vector2 name="Offset">
+									<X>0</X>
+									<Y>0</Y>
+								</Vector2>
+								<float name="Rotation">180</float>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+								<NumberSequence name="Transparency">0 0 0 0.5 0 0 0.501 1 0 1 1 0 </NumberSequence>
+							</Properties>
+						</Item>
+					</Item>
+				</Item>
+				<Item class="NumberValue" referent="RBX74FF14BC2A1E4280A53A637E0CC48029">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<string name="Name">Percentage</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<double name="Value">0</double>
+					</Properties>
+					<Item class="LocalScript" referent="RBX2A4BD81192694C23BDB740826215FF9D">
+						<Properties>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<bool name="Disabled">false</bool>
+							<Content name="LinkedSource"><null></null></Content>
+							<string name="Name">ProgressScript</string>
+							<token name="RunContext">0</token>
+							<string name="ScriptGuid">{6D60FEA5-22AA-42D5-84FF-B630A50FA065}</string>
+							<ProtectedString name="Source"><![CDATA[-- MissingPartType: "Trans", "Color", "TransAndColor".
+-- Direction: "Left", "Middle", Right".
+-- StarterPoint: "Up", "Down", "Left", "Right"
+
+local F1 = script.Parent.Parent.Frame1
+local F2 = script.Parent.Parent.Frame2
+
+
+
+
+function FramePosChanger(Direction,StarterPoint)
+	if Direction == "Vertical" then
+		F1.Position = StarterPoint == "Up" and UDim2.fromScale(0,0) or UDim2.fromScale(1,0)
+		F2.Position = StarterPoint == "Up" and UDim2.fromScale(1,0) or UDim2.fromScale(0,0)
+		F1.AnchorPoint = StarterPoint == "Up" and Vector2.new(0,0) or Vector2.new(1,0)
+		F2.AnchorPoint = StarterPoint == "Up" and Vector2.new(1,0) or Vector2.new(0,0)
+		F1.Size = UDim2.fromScale(0.5,1)
+		F2.Size = UDim2.fromScale(0.5,1)
+		F1.ImageLabel.Position = StarterPoint == "Up" and UDim2.fromScale(0,0) or UDim2.fromScale(1,0)
+		F2.ImageLabel.Position = StarterPoint == "Up" and UDim2.fromScale(1,0) or UDim2.fromScale(0,0)
+		F1.ImageLabel.AnchorPoint = StarterPoint == "Up" and Vector2.new(0,0) or Vector2.new(1,0)
+		F2.ImageLabel.AnchorPoint = StarterPoint == "Up" and Vector2.new(1,0) or Vector2.new(0,0)
+		F1.ImageLabel.Size = UDim2.fromScale(2,1)
+		F2.ImageLabel.Size = UDim2.fromScale(2,1)
+	elseif Direction == "Horizontal" then
+		F1.Position = StarterPoint == "Right" and UDim2.fromScale(0,0) or UDim2.fromScale(0,1)
+		F2.Position = StarterPoint == "Right" and UDim2.fromScale(0,1) or UDim2.fromScale(0,0)
+		F1.AnchorPoint = StarterPoint == "Right" and Vector2.new(0,0) or Vector2.new(0,1)
+		F2.AnchorPoint = StarterPoint == "Right" and Vector2.new(0,1) or Vector2.new(0,0)
+		F1.Size = UDim2.fromScale(1,0.5)
+		F2.Size = UDim2.fromScale(1,0.5)
+		F1.ImageLabel.Position = StarterPoint == "Right" and UDim2.fromScale(0,0) or UDim2.fromScale(0,1)
+		F2.ImageLabel.Position = StarterPoint == "Right" and UDim2.fromScale(0,1) or UDim2.fromScale(0,0)
+		F1.ImageLabel.AnchorPoint = StarterPoint == "Right" and Vector2.new(0,0) or Vector2.new(0,1)
+		F2.ImageLabel.AnchorPoint = StarterPoint == "Right" and Vector2.new(0,1) or Vector2.new(0,0)
+		F1.ImageLabel.Size = UDim2.fromScale(1,2)
+		F2.ImageLabel.Size = UDim2.fromScale(1,2)
+	end
+end
+
+function Progress(Value)
+	local EvenX = math.floor(script.Parent.Parent.AbsoluteSize.X + 0.5)%2
+	local EvenY = math.floor(script.Parent.Parent.AbsoluteSize.Y + 0.5)%2
+	local PercentNumber = math.clamp(Value * 3.6,0,360)
+	local I1 = script.Parent.Parent.Frame1.ImageLabel
+	local I2 = script.Parent.Parent.Frame2.ImageLabel
+	local G1 = I1.UIGradient
+	local G2 = I2.UIGradient
+	I1.ImageColor3 = script.ImageColor.Value
+	I2.ImageColor3 = script.ImageColor.Value
+	I1.ImageTransparency = script.ImageTrans.Value
+	I2.ImageTransparency = script.ImageTrans.Value
+	I1.Image = "rbxassetid://" .. script.ImageId.Value
+	I2.Image = "rbxassetid://" .. script.ImageId.Value
+	if script.StarterPoint.Value == "Up" or script.StarterPoint.Value == "Down"  then
+		FramePosChanger("Vertical",script.StarterPoint.Value)
+		if script.StarterPoint.Value == "Up" then
+			if script.Direction.Value == "Left" then
+				G1.Rotation = math.clamp(PercentNumber,180,360)
+				G2.Rotation = math.clamp(PercentNumber,0,180)
+			elseif script.Direction.Value == "Right" then
+				G1.Rotation = 180 - math.clamp(PercentNumber,0,180)
+				G2.Rotation = - math.clamp(PercentNumber,180,360) + 180
+			elseif script.Direction.Value == "Middle" then
+				G1.Rotation = 180 - math.clamp(PercentNumber,0,360)/2
+				G2.Rotation = math.clamp(PercentNumber,0,360)/2
+			end
+		elseif script.StarterPoint.Value == "Down" then
+			if script.Direction.Value == "Left" then
+				G1.Rotation = math.clamp(PercentNumber,180,360) + 180
+				G2.Rotation = math.clamp(PercentNumber,0,180) + 180
+			elseif script.Direction.Value == "Right" then
+				G1.Rotation = - math.clamp(PercentNumber,0,180)
+				G2.Rotation = - math.clamp(PercentNumber,180,360)
+			elseif script.Direction.Value == "Middle" then
+				G1.Rotation = - math.clamp(PercentNumber,0,360)/2
+				G2.Rotation = math.clamp(PercentNumber,0,360)/2 + 180
+			end
+		end
+	elseif script.StarterPoint.Value == "Left" or script.StarterPoint.Value == "Right"  then
+		FramePosChanger("Horizontal",script.StarterPoint.Value)
+		if script.StarterPoint.Value == "Left" then
+			if script.Direction.Value == "Left" then
+				G1.Rotation = math.clamp(PercentNumber,180,360) - 90
+				G2.Rotation = math.clamp(PercentNumber,0,180) - 90
+			elseif script.Direction.Value == "Right" then
+				G1.Rotation = 90 - math.clamp(PercentNumber,0,180)
+				G2.Rotation = - math.clamp(PercentNumber,180,360) + 90
+			elseif script.Direction.Value == "Middle" then
+				G1.Rotation = 90 - math.clamp(PercentNumber,0,360)/2
+				G2.Rotation = math.clamp(PercentNumber,0,360)/2  - 90
+			end
+		elseif script.StarterPoint.Value == "Right" then
+			if script.Direction.Value == "Left" then
+				G1.Rotation = math.clamp(PercentNumber,180,360) + 90
+				G2.Rotation = math.clamp(PercentNumber,0,180) + 90
+			elseif script.Direction.Value == "Right" then
+				G1.Rotation = 270 - math.clamp(PercentNumber,0,180)
+				G2.Rotation = - math.clamp(PercentNumber,180,360) + 270
+			elseif script.Direction.Value == "Middle" then
+				G1.Rotation = 270 - math.clamp(PercentNumber,0,360)/2
+				G2.Rotation = math.clamp(PercentNumber,0,360)/2  + 90
+			end
+		end
+	else
+		script.StarterPoint.Value = "Up"
+		warn("Unknown Type. Only 4 available: “Up”, “Down”, “Left” and “Right”, changing to “Up”.")
+	end
+	if script.MissingPartType.Value == "Color" then
+		I1.UIGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0,script.ColorOfPercentPart.Value),ColorSequenceKeypoint.new(0.5,script.ColorOfPercentPart.Value),ColorSequenceKeypoint.new(0.502,script.ColorOfMissingPart.Value),ColorSequenceKeypoint.new(1,script.ColorOfMissingPart.Value)})
+		I2.UIGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0,script.ColorOfPercentPart.Value),ColorSequenceKeypoint.new(0.5,script.ColorOfPercentPart.Value),ColorSequenceKeypoint.new(0.502,script.ColorOfMissingPart.Value),ColorSequenceKeypoint.new(1,script.ColorOfMissingPart.Value)})
+		I1.UIGradient.Transparency = NumberSequence.new(0)
+		I2.UIGradient.Transparency = NumberSequence.new(0)
+	elseif script.MissingPartType.Value == "Trans" then
+		I1.UIGradient.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,script.TransOfPercentPart.Value),NumberSequenceKeypoint.new(0.5,script.TransOfPercentPart.Value),NumberSequenceKeypoint.new(0.502,script.TransOfMissingPart.Value),NumberSequenceKeypoint.new(1,script.TransOfMissingPart.Value)})
+		I2.UIGradient.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,script.TransOfPercentPart.Value),NumberSequenceKeypoint.new(0.5,script.TransOfPercentPart.Value),NumberSequenceKeypoint.new(0.502,script.TransOfMissingPart.Value),NumberSequenceKeypoint.new(1,script.TransOfMissingPart.Value)})
+		I1.UIGradient.Color = ColorSequence.new(Color3.new(1,1,1))
+		I2.UIGradient.Color = ColorSequence.new(Color3.new(1,1,1))
+	elseif script.MissingPartType.Value == "TransAndColor" then
+		I1.UIGradient.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,script.TransOfPercentPart.Value),NumberSequenceKeypoint.new(0.5,script.TransOfPercentPart.Value),NumberSequenceKeypoint.new(0.502,script.TransOfMissingPart.Value),NumberSequenceKeypoint.new(1,script.TransOfMissingPart.Value)})
+		I2.UIGradient.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,script.TransOfPercentPart.Value),NumberSequenceKeypoint.new(0.5,script.TransOfPercentPart.Value),NumberSequenceKeypoint.new(0.502,script.TransOfMissingPart.Value),NumberSequenceKeypoint.new(1,script.TransOfMissingPart.Value)})
+		I1.UIGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0,script.ColorOfPercentPart.Value),ColorSequenceKeypoint.new(0.5,script.ColorOfPercentPart.Value),ColorSequenceKeypoint.new(0.502,script.ColorOfMissingPart.Value),ColorSequenceKeypoint.new(1,script.ColorOfMissingPart.Value)})
+		I2.UIGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0,script.ColorOfPercentPart.Value),ColorSequenceKeypoint.new(0.5,script.ColorOfPercentPart.Value),ColorSequenceKeypoint.new(0.502,script.ColorOfMissingPart.Value),ColorSequenceKeypoint.new(1,script.ColorOfMissingPart.Value)})
+	else
+		script.MissingPartType.Value = "Trans"
+		warn("Unknown Type. Only 3 available: “Trans”, “Color” and “TransAndColor”, changing to “Trans”.")
+	end
+end
+
+script.Parent:GetPropertyChangedSignal("Value"):Connect(function()
+	Progress(script.Parent.Value)
+end)
+
+for Numebr , Property in pairs(script:GetChildren()) do
+	Property:GetPropertyChangedSignal("Value"):Connect(function()
+		Progress(script.Parent.Value)
+	end)
+end]]></ProtectedString>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+						</Properties>
+						<Item class="StringValue" referent="RBXC178DFFC1CDE4359B2B256176A0AEA6D">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<string name="Name">MissingPartType</string>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+								<string name="Value">TransAndColor</string>
+							</Properties>
+						</Item>
+						<Item class="NumberValue" referent="RBXD914E2BFD33B4DFC981180C93C75E412">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<string name="Name">TransOfMissingPart</string>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+								<double name="Value">0.25</double>
+							</Properties>
+						</Item>
+						<Item class="Color3Value" referent="RBX35EBDC3F3FAA45609CDB25D81688D347">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<string name="Name">ColorOfMissingPart</string>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+								<Color3 name="Value">
+									<R>0.0784313753</R>
+									<G>0.0784313753</G>
+									<B>0.0784313753</B>
+								</Color3>
+							</Properties>
+						</Item>
+						<Item class="NumberValue" referent="RBX3EBEF9059DDF4D3E8185472F61557087">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<string name="Name">TransOfPercentPart</string>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+								<double name="Value">0</double>
+							</Properties>
+						</Item>
+						<Item class="Color3Value" referent="RBX686C574F9BFD4196A40B8388745BB17C">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<string name="Name">ColorOfPercentPart</string>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+								<Color3 name="Value">
+									<R>0.0705882385</R>
+									<G>0.298039228</G>
+									<B>0.90196085</B>
+								</Color3>
+							</Properties>
+						</Item>
+						<Item class="Color3Value" referent="RBXEE5EE5671AEE4031A002CD7E98252FB8">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<string name="Name">ImageColor</string>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+								<Color3 name="Value">
+									<R>1</R>
+									<G>1</G>
+									<B>1</B>
+								</Color3>
+							</Properties>
+						</Item>
+						<Item class="NumberValue" referent="RBX13FB42D46BB248D8ADA43C1D4F1DBECA">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<string name="Name">ImageTrans</string>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+								<double name="Value">0</double>
+							</Properties>
+						</Item>
+						<Item class="StringValue" referent="RBXD13DB1556F1E4B5698D10CA6C6FB792F">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<string name="Name">ImageId</string>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+								<string name="Value">3587367081</string>
+							</Properties>
+						</Item>
+						<Item class="StringValue" referent="RBXDB2C08D019884AF188DA46E3E4CF001C">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<string name="Name">StarterPoint</string>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+								<string name="Value">Up</string>
+							</Properties>
+						</Item>
+						<Item class="StringValue" referent="RBX0BFC005B756143E5867915DACEE768AE">
+							<Properties>
+								<BinaryString name="AttributesSerialize"></BinaryString>
+								<string name="Name">Direction</string>
+								<int64 name="SourceAssetId">-1</int64>
+								<BinaryString name="Tags"></BinaryString>
+								<string name="Value">Left</string>
+							</Properties>
+						</Item>
+					</Item>
+				</Item>
+			</Item>
+			<Item class="TextLabel" referent="RBX44635C1C43DD425AA66D5247F03457DD">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0.5</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882362</R>
+						<G>0.164705887</G>
+						<B>0.207843155</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">1</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/GothamSSm.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+					</Font>
+					<int name="LayoutOrder">0</int>
+					<float name="LineHeight">1</float>
+					<int name="MaxVisibleGraphemes">-1</int>
+					<string name="Name">Icon</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.514705896</XS>
+						<XO>0</XO>
+						<YS>0.150000006</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="RichText">false</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>0</XS>
+						<XO>41</XO>
+						<YS>0</YS>
+						<YO>44</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<string name="Text">&#240;&#159;&#143;&#166;</string>
+					<Color3 name="TextColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<bool name="TextScaled">false</bool>
+					<float name="TextSize">39</float>
+					<Color3 name="TextStrokeColor3">
+						<R>0</R>
+						<G>0</G>
+						<B>0</B>
+					</Color3>
+					<float name="TextStrokeTransparency">1</float>
+					<float name="TextTransparency">0</float>
+					<token name="TextTruncate">0</token>
+					<bool name="TextWrapped">false</bool>
+					<token name="TextXAlignment">2</token>
+					<token name="TextYAlignment">1</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">2</int>
+				</Properties>
+			</Item>
+			<Item class="TextLabel" referent="RBXC3FF353F3B9D48D58FCD54C7917077DF">
+				<Properties>
+					<bool name="Active">false</bool>
+					<Vector2 name="AnchorPoint">
+						<X>0</X>
+						<Y>0</Y>
+					</Vector2>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<bool name="AutoLocalize">true</bool>
+					<token name="AutomaticSize">0</token>
+					<Color3 name="BackgroundColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<float name="BackgroundTransparency">1</float>
+					<Color3 name="BorderColor3">
+						<R>0.105882362</R>
+						<G>0.164705887</G>
+						<B>0.207843155</B>
+					</Color3>
+					<token name="BorderMode">0</token>
+					<int name="BorderSizePixel">1</int>
+					<bool name="ClipsDescendants">false</bool>
+					<bool name="Draggable">false</bool>
+					<Font name="FontFace">
+						<Family><url>rbxasset://fonts/families/GothamSSm.json</url></Family>
+						<Weight>400</Weight>
+						<Style>Normal</Style>
+					</Font>
+					<int name="LayoutOrder">0</int>
+					<float name="LineHeight">1</float>
+					<int name="MaxVisibleGraphemes">-1</int>
+					<string name="Name">TextLabel</string>
+					<Ref name="NextSelectionDown">null</Ref>
+					<Ref name="NextSelectionLeft">null</Ref>
+					<Ref name="NextSelectionRight">null</Ref>
+					<Ref name="NextSelectionUp">null</Ref>
+					<UDim2 name="Position">
+						<XS>0.0882352963</XS>
+						<XO>0</XO>
+						<YS>0.629999995</YS>
+						<YO>0</YO>
+					</UDim2>
+					<bool name="RichText">false</bool>
+					<Ref name="RootLocalizationTable">null</Ref>
+					<float name="Rotation">0</float>
+					<bool name="Selectable">false</bool>
+					<token name="SelectionBehaviorDown">0</token>
+					<token name="SelectionBehaviorLeft">0</token>
+					<token name="SelectionBehaviorRight">0</token>
+					<token name="SelectionBehaviorUp">0</token>
+					<bool name="SelectionGroup">false</bool>
+					<Ref name="SelectionImageObject">null</Ref>
+					<int name="SelectionOrder">0</int>
+					<UDim2 name="Size">
+						<XS>0</XS>
+						<XO>56</XO>
+						<YS>0</YS>
+						<YO>31</YO>
+					</UDim2>
+					<token name="SizeConstraint">0</token>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<string name="Text">MeBank</string>
+					<Color3 name="TextColor3">
+						<R>1</R>
+						<G>1</G>
+						<B>1</B>
+					</Color3>
+					<bool name="TextScaled">true</bool>
+					<float name="TextSize">16</float>
+					<Color3 name="TextStrokeColor3">
+						<R>0</R>
+						<G>0</G>
+						<B>0</B>
+					</Color3>
+					<float name="TextStrokeTransparency">1</float>
+					<float name="TextTransparency">0</float>
+					<token name="TextTruncate">0</token>
+					<bool name="TextWrapped">true</bool>
+					<token name="TextXAlignment">2</token>
+					<token name="TextYAlignment">1</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="UITextSizeConstraint" referent="RBXFA51484567AF45F5A0790FCFC9B9D440">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<int name="MaxTextSize">100</int>
+						<int name="MinTextSize">14</int>
+						<string name="Name">UITextSizeConstraint</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+			</Item>
+		</Item>
+		<Item class="ModuleScript" referent="RBX78086F57DD614B37A3FB12D0EACC8358">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<Content name="LinkedSource"><null></null></Content>
+				<string name="Name">otp</string>
+				<string name="ScriptGuid">{E2CF7145-F3FE-4A97-9523-573C57B4EC8A}</string>
+				<ProtectedString name="Source"><![CDATA[--[[
+MIT License
+
+Copyright (c) 2021 Cody Tilkins
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+]]
+
+-- please point these to proper location
+local basexx = require(script["basexx"])
+local sha1 = require(script["sha1"])
+local util = require(script["util"])
+
+local otp = {
+	util = util
+}
+
+--[[
+	{...} contains:
+		otp.type == totp
+			> Number interval
+
+		otp.type == hotp
+			> nil
+
+		otp.type == otp
+			> nil
+--]]
+otp.new = function(secret, digits, digest, ...)
+	local this = {}
+	this.secret = secret
+	this.digits = digits or 6
+	this.digest = digest or "sha1"
+
+	local args = {...}
+	if(string.lower(otp.type) == "totp")then
+		this.interval = args[1]
+	elseif(string.lower(otp.type) == "hotp")then
+
+	end
+
+	return this
+end
+
+
+
+otp.generate_otp = function(instance, input)
+	if (input < 0) then
+		return nil
+	end
+
+	local hash = sha1.hmac_binary(otp.byte_secret(instance), otp.int_to_bytestring(input))
+	local offset = bit32.band(string.byte(hash:sub(-1, -1)), 0xF) + 1
+
+	local bhash = util.str_to_byte(hash)
+
+	local code = bit32.bor(
+		bit32.lshift(bit32.band(bhash[offset], 0x7F), 24),
+		bit32.lshift(bit32.band(bhash[offset + 1], 0xFF), 16),
+		bit32.lshift(bit32.band(bhash[offset + 2], 0xFF), 8),
+		bit32.lshift(bit32.band(bhash[offset + 3], 0xFF), 0)
+	)
+
+	local str_code = tostring(math.floor(code % (10 ^ instance.digits)))
+	while #str_code < instance.digits do
+		str_code = '0' .. str_code
+	end
+
+	return str_code
+end
+
+otp.byte_secret = function(instance)
+	local missing_padding = #(instance.secret) % 8
+	if (missing_padding ~= 0) then
+		instance.secret = instance.secret .. string.rep('=', (8 - missing_padding))
+	end
+	return basexx.from_base32(instance.secret)
+end
+
+otp.int_to_bytestring = function(i, padding)
+	local bytes = {}
+	while (i ~= 0) do
+		table.insert(bytes, bit32.band(i, 0xFF))
+		i = bit32.rshift(i, 8)
+	end
+	return string.rep('\0', math.max(0, (padding or 8) - #bytes)) .. util.byte_arr_tostring(util.arr_reverse(bytes))
+end
+
+return otp
+]]></ProtectedString>
+				<int64 name="SourceAssetId">11789295336</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+			<Item class="ModuleScript" referent="RBXE4191F23B33941E6A73201C878ADCCEE">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">sha1</string>
+					<string name="ScriptGuid">{72376872-5FDF-4628-8272-BFE454A055F0}</string>
+					<ProtectedString name="Source"><![CDATA[local common = require(script["common"])
+
+local sha1 = {
+	-- Meta fields retained for compatibility.
+	_VERSION     = "sha.lua 0.6.0",
+	_URL         = "https://github.com/mpeterv/sha1",
+	_DESCRIPTION = [[
+SHA-1 secure hash and HMAC-SHA1 signature computation in Lua,
+using bit and bit32 modules and Lua 5.3 operators when available
+and falling back to a pure Lua implementation on Lua 5.1.
+Based on code orignally by Jeffrey Friedl and modified by
+Eike Decker and Enrique García Cota.]],
+	_LICENSE = [[
+MIT LICENSE
+
+Copyright (c) 2013 Enrique García Cota, Eike Decker, Jeffrey Friedl
+Copyright (c) 2018 Peter Melnichenko
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.]]
+}
+
+sha1.version = "0.6.0"
+
+
+local ops = require(script["bit32_ops"])
+local uint32_lrot = ops.uint32_lrot
+local byte_xor = ops.byte_xor
+local uint32_xor_3 = ops.uint32_xor_3
+local uint32_xor_4 = ops.uint32_xor_4
+local uint32_ternary = ops.uint32_ternary
+local uint32_majority = ops.uint32_majority
+
+local bytes_to_uint32 = common.bytes_to_uint32
+local uint32_to_bytes = common.uint32_to_bytes
+
+local sbyte = string.byte
+local schar = string.char
+local sformat = string.format
+local srep = string.rep
+
+local function hex_to_binary(hex)
+	return (hex:gsub("..", function(hexval)
+		return schar(tonumber(hexval, 16))
+	end))
+end
+
+-- Calculates SHA1 for a string, returns it encoded as 40 hexadecimal digits.
+function sha1.sha1(str)
+	-- Input preprocessing.
+	-- First, append a `1` bit and seven `0` bits.
+	local first_append = schar(0x80)
+
+	-- Next, append some zero bytes to make the length of the final message a multiple of 64.
+	-- Eight more bytes will be added next.
+	local non_zero_message_bytes = #str + 1 + 8
+	local second_append = srep(schar(0), -non_zero_message_bytes % 64)
+
+	-- Finally, append the length of the original message in bits as a 64-bit number.
+	-- Assume that it fits into the lower 32 bits.
+	local third_append = schar(0, 0, 0, 0, uint32_to_bytes(#str * 8))
+
+	str = str .. first_append .. second_append .. third_append
+	assert(#str % 64 == 0)
+
+	-- Initialize hash value.
+	local h0 = 0x67452301
+	local h1 = 0xEFCDAB89
+	local h2 = 0x98BADCFE
+	local h3 = 0x10325476
+	local h4 = 0xC3D2E1F0
+
+	local w = {}
+
+	-- Process the input in successive 64-byte chunks.
+	for chunk_start = 1, #str, 64 do
+		-- Load the chunk into W[0..15] as uint32 numbers.
+		local uint32_start = chunk_start
+
+		for i = 0, 15 do
+			w[i] = bytes_to_uint32(sbyte(str, uint32_start, uint32_start + 3))
+			uint32_start = uint32_start + 4
+		end
+
+		-- Extend the input vector.
+		for i = 16, 79 do
+			w[i] = uint32_lrot(uint32_xor_4(w[i - 3], w[i - 8], w[i - 14], w[i - 16]), 1)
+		end
+
+		-- Initialize hash value for this chunk.
+		local a = h0
+		local b = h1
+		local c = h2
+		local d = h3
+		local e = h4
+
+		-- Main loop.
+		for i = 0, 79 do
+			local f
+			local k
+
+			if i <= 19 then
+				f = uint32_ternary(b, c, d)
+				k = 0x5A827999
+			elseif i <= 39 then
+				f = uint32_xor_3(b, c, d)
+				k = 0x6ED9EBA1
+			elseif i <= 59 then
+				f = uint32_majority(b, c, d)
+				k = 0x8F1BBCDC
+			else
+				f = uint32_xor_3(b, c, d)
+				k = 0xCA62C1D6
+			end
+
+			local temp = (uint32_lrot(a, 5) + f + e + k + w[i]) % 4294967296
+			e = d
+			d = c
+			c = uint32_lrot(b, 30)
+			b = a
+			a = temp
+		end
+
+		-- Add this chunk's hash to result so far.
+		h0 = (h0 + a) % 4294967296
+		h1 = (h1 + b) % 4294967296
+		h2 = (h2 + c) % 4294967296
+		h3 = (h3 + d) % 4294967296
+		h4 = (h4 + e) % 4294967296
+	end
+
+	return sformat("%08x%08x%08x%08x%08x", h0, h1, h2, h3, h4)
+end
+
+function sha1.binary(str)
+	return hex_to_binary(sha1.sha1(str))
+end
+
+-- Precalculate replacement tables.
+local xor_with_0x5c = {}
+local xor_with_0x36 = {}
+
+for i = 0, 0xff do
+	xor_with_0x5c[schar(i)] = schar(byte_xor(0x5c, i))
+	xor_with_0x36[schar(i)] = schar(byte_xor(0x36, i))
+end
+
+-- 512 bits.
+local BLOCK_SIZE = 64
+
+function sha1.hmac(key, text)
+	if #key > BLOCK_SIZE then
+		key = sha1.binary(key)
+	end
+
+	local key_xord_with_0x36 = key:gsub('.', xor_with_0x36) .. srep(schar(0x36), BLOCK_SIZE - #key)
+	local key_xord_with_0x5c = key:gsub('.', xor_with_0x5c) .. srep(schar(0x5c), BLOCK_SIZE - #key)
+
+	return sha1.sha1(key_xord_with_0x5c .. sha1.binary(key_xord_with_0x36 .. text))
+end
+
+function sha1.hmac_binary(key, text)
+	return hex_to_binary(sha1.hmac(key, text))
+end
+
+setmetatable(sha1, {__call = function(_, str) return sha1.sha1(str) end})
+
+return sha1]]></ProtectedString>
+					<int64 name="SourceAssetId">11789295336</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+				<Item class="ModuleScript" referent="RBXEB643DFD9FE0433B991BFB8D2D0198E9">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<Content name="LinkedSource"><null></null></Content>
+						<string name="Name">common</string>
+						<string name="ScriptGuid">{E00FDC47-0FD7-4994-A5BE-A94905FE691B}</string>
+						<ProtectedString name="Source"><![CDATA[local common = {}
+
+-- Merges four bytes into a uint32 number.
+function common.bytes_to_uint32(a, b, c, d)
+	return a * 0x1000000 + b * 0x10000 + c * 0x100 + d
+end
+
+-- Splits a uint32 number into four bytes.
+function common.uint32_to_bytes(a)
+	local a4 = a % 256
+	a = (a - a4) / 256
+	local a3 = a % 256
+	a = (a - a3) / 256
+	local a2 = a % 256
+	local a1 = (a - a2) / 256
+	return a1, a2, a3, a4
+end
+
+
+return common]]></ProtectedString>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBX39918124B30742E5A1EDB7A5104093AE">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<Content name="LinkedSource"><null></null></Content>
+						<string name="Name">bit32_ops</string>
+						<string name="ScriptGuid">{8FB4A3BD-8039-45D9-8E80-764DFC90AFAA}</string>
+						<ProtectedString name="Source"><![CDATA[local ops = {}
+
+local band = bit32.band
+local bor = bit32.bor
+local bxor = bit32.bxor
+
+ops.uint32_lrot = bit32.lrotate
+ops.byte_xor = bxor
+ops.uint32_xor_3 = bxor
+ops.uint32_xor_4 = bxor
+
+function ops.uint32_ternary(a, b, c)
+	-- c ~ (a & (b ~ c)) has less bitwise operations than (a & b) | (~a & c).
+	return bxor(c, band(a, bxor(b, c)))
+end
+
+function ops.uint32_majority(a, b, c)
+	-- (a & (b | c)) | (b & c) has less bitwise operations than (a & b) | (a & c) | (b & c).
+	return bor(band(a, bor(b, c)), band(b, c))
+end
+
+return ops]]></ProtectedString>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="ModuleScript" referent="RBX72337F333C904703934E1AF391790DAB">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">util</string>
+					<string name="ScriptGuid">{C6AF5015-9E1E-488E-B092-1D805E535A17}</string>
+					<ProtectedString name="Source"><![CDATA[--[[
+MIT License
+
+Copyright (c) 2021 Cody Tilkins
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+]]
+
+local util = {}
+
+util.default_chars = {
+	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+	'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+	'U', 'V', 'W', 'X', 'Y', 'Z', '2', '3', '4', '5',
+	'6', '7'
+}
+
+util.base_uri = "otpauth://%s/%s%s"
+
+util.build_args = function(arr)
+	local out = "?"
+	for i, v in pairs(arr)do
+		out = out .. i .. '=' .. util.encode_url(v) .. '&'
+	end
+	return string.sub(out, 1, #out-1)
+end
+
+util.encode_url = function(url)
+	local out = ""
+	for i=1, #url do
+		local ch = url:sub(i,i)
+		local by = string.byte(ch)
+		local ch = string.gsub(ch, "^[%c\"<>#%%%s{}|\\%^~%[%]`]+", function(s)
+			return string.format("%%%02x", by)
+		end)
+		if(by > 126)then
+			ch = string.format("%%%02x", by)
+		end
+		out = out .. ch
+	end
+	return out
+end
+
+util.build_uri = function(secret, name, initial_count, issuer_name, algorithm, digits, period)
+	local label = util.encode_url(name)
+	label = issuer_name and (util.encode_url(issuer_name) .. ':' .. label) or ""
+
+	algorithm = algorithm and string.upper(algorithm) or ""
+
+	local url_args = {
+		secret = tostring(secret),
+		issuer = issuer_name,
+		counter = tostring(initial_count),
+		algorithm = algorithm,
+		digits = tostring(digits)
+	}
+	if(initial_count == nil) then
+		url_args.period = tostring(period)
+	end
+	return string.format(util.base_uri, initial_count ~= nil and "hotp" or "totp", label, util.build_args(url_args))
+end
+
+util.arr_reverse = function(tab)
+	local out = {}
+	for i=1, #tab do
+		out[i] = tab[1+#tab - i]
+	end
+	return out
+end
+
+util.byte_arr_tostring = function(arr)
+	local out = ""
+	for i=1, #arr do
+		out = out .. string.char(arr[i])
+	end
+	return out
+end
+
+util.str_to_byte = function(str)
+	local out = {}
+	for i=1, #str do
+		out[i] = string.byte(str:sub(i,i))
+	end
+	return out
+end
+
+util.random_base32 = function(length, chars)
+	length = length or 16
+	chars = chars or util.default_chars
+	local out = ""
+	for i=1, length do
+		out = out .. chars[math.random(1, #chars)]
+	end
+	return out
+end
+
+return util
+]]></ProtectedString>
+					<int64 name="SourceAssetId">11789295336</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBX40D3BE62BD6B454CAA69AC055C45A56D">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<Content name="LinkedSource"><null></null></Content>
+					<string name="Name">basexx</string>
+					<string name="ScriptGuid">{2B02B07B-E56B-4336-B058-F081BFBA9BD4}</string>
+					<ProtectedString name="Source"><![CDATA[--------------------------------------------------------------------------------
+-- util functions
+--------------------------------------------------------------------------------
+
+local function divide_string( str, max )
+	local result = {}
+
+	local start = 1
+	for i = 1, #str do
+		if i % max == 0 then
+			table.insert( result, str:sub( start, i ) )
+			start = i + 1
+		elseif i == #str then
+			table.insert( result, str:sub( start, i ) )
+		end
+	end
+
+	return result
+end
+
+local function number_to_bit( num, length )
+	local bits = {}
+
+	while num > 0 do
+		local rest = math.floor( math.fmod( num, 2 ) )
+		table.insert( bits, rest )
+		num = ( num - rest ) / 2
+	end
+
+	while #bits < length do
+		table.insert( bits, "0" )
+	end
+
+	return string.reverse( table.concat( bits ) )
+end
+
+local function ignore_set( str, set )
+	if set then
+		str = str:gsub( "["..set.."]", "" )
+	end
+	return str
+end
+
+local function pure_from_bit( str )
+	return ( str:gsub( '........', function ( cc )
+		return string.char( tonumber( cc, 2 ) )
+	end ) )
+end
+
+local function unexpected_char_error( str, pos )
+	local c = string.sub( str, pos, pos )
+	return string.format( "unexpected character at position %d: '%s'", pos, c )
+end
+
+--------------------------------------------------------------------------------
+
+local basexx = {}
+
+--------------------------------------------------------------------------------
+-- base2(bitfield) decode and encode function
+--------------------------------------------------------------------------------
+
+local bitMap = { o = "0", i = "1", l = "1" }
+
+function basexx.from_bit( str, ignore )
+	str = ignore_set( str, ignore )
+	str = string.lower( str )
+	str = str:gsub( '[ilo]', function( c ) return bitMap[ c ] end )
+	local pos = string.find( str, "[^01]" )
+	if pos then return nil, unexpected_char_error( str, pos ) end
+
+	return pure_from_bit( str )
+end
+
+function basexx.to_bit( str )
+	return ( str:gsub( '.', function ( c )
+		local byte = string.byte( c )
+		local bits = {}
+		for _ = 1,8 do
+			table.insert( bits, byte % 2 )
+			byte = math.floor( byte / 2 )
+		end
+		return table.concat( bits ):reverse()
+	end ) )
+end
+
+--------------------------------------------------------------------------------
+-- base16(hex) decode and encode function
+--------------------------------------------------------------------------------
+
+function basexx.from_hex( str, ignore )
+	str = ignore_set( str, ignore )
+	local pos = string.find( str, "[^%x]" )
+	if pos then return nil, unexpected_char_error( str, pos ) end
+
+	return ( str:gsub( '..', function ( cc )
+		return string.char( tonumber( cc, 16 ) )
+	end ) )
+end
+
+function basexx.to_hex( str )
+	return ( str:gsub( '.', function ( c )
+		return string.format('%02X', string.byte( c ) )
+	end ) )
+end
+
+--------------------------------------------------------------------------------
+-- generic function to decode and encode base32/base64
+--------------------------------------------------------------------------------
+
+local function from_basexx( str, alphabet, bits )
+	local result = {}
+	for i = 1, #str do
+		local c = string.sub( str, i, i )
+		if c ~= '=' then
+			local index = string.find( alphabet, c, 1, true )
+			if not index then
+				return nil, unexpected_char_error( str, i )
+			end
+			table.insert( result, number_to_bit( index - 1, bits ) )
+		end
+	end
+
+	local value = table.concat( result )
+	local pad = #value % 8
+	return pure_from_bit( string.sub( value, 1, #value - pad ) )
+end
+
+local function to_basexx( str, alphabet, bits, pad )
+	local bitString = basexx.to_bit( str )
+
+	local chunks = divide_string( bitString, bits )
+	local result = {}
+	for _,value in ipairs( chunks ) do
+		if ( #value < bits ) then
+			value = value .. string.rep( '0', bits - #value )
+		end
+		local pos = tonumber( value, 2 ) + 1
+		table.insert( result, alphabet:sub( pos, pos ) )
+	end
+
+	table.insert( result, pad )
+	return table.concat( result )
+end
+
+--------------------------------------------------------------------------------
+-- rfc 3548: http://www.rfc-editor.org/rfc/rfc3548.txt
+--------------------------------------------------------------------------------
+
+local base32Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+local base32PadMap = { "", "======", "====", "===", "=" }
+
+function basexx.from_base32( str, ignore )
+	str = ignore_set( str, ignore )
+	return from_basexx( string.upper( str ), base32Alphabet, 5 )
+end
+
+function basexx.to_base32( str )
+	return to_basexx( str, base32Alphabet, 5, base32PadMap[ #str % 5 + 1 ] )
+end
+
+--------------------------------------------------------------------------------
+-- crockford: http://www.crockford.com/wrmg/base32.html
+--------------------------------------------------------------------------------
+
+local crockfordAlphabet = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+local crockfordMap = { O = "0", I = "1", L = "1" }
+
+function basexx.from_crockford( str, ignore )
+	str = ignore_set( str, ignore )
+	str = string.upper( str )
+	str = str:gsub( '[ILOU]', function( c ) return crockfordMap[ c ] end )
+	return from_basexx( str, crockfordAlphabet, 5 )
+end
+
+function basexx.to_crockford( str )
+	return to_basexx( str, crockfordAlphabet, 5, "" )
+end
+
+--------------------------------------------------------------------------------
+-- base64 decode and encode function
+--------------------------------------------------------------------------------
+
+local base64Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"..
+	"abcdefghijklmnopqrstuvwxyz"..
+	"0123456789+/"
+local base64PadMap = { "", "==", "=" }
+
+function basexx.from_base64( str, ignore )
+	str = ignore_set( str, ignore )
+	return from_basexx( str, base64Alphabet, 6 )
+end
+
+function basexx.to_base64( str )
+	return to_basexx( str, base64Alphabet, 6, base64PadMap[ #str % 3 + 1 ] )
+end
+
+--------------------------------------------------------------------------------
+-- URL safe base64 decode and encode function
+--------------------------------------------------------------------------------
+
+local url64Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"..
+	"abcdefghijklmnopqrstuvwxyz"..
+	"0123456789-_"
+
+function basexx.from_url64( str, ignore )
+	str = ignore_set( str, ignore )
+	return from_basexx( str, url64Alphabet, 6 )
+end
+
+function basexx.to_url64( str )
+	return to_basexx( str, url64Alphabet, 6, "" )
+end
+
+--------------------------------------------------------------------------------
+--
+--------------------------------------------------------------------------------
+
+local function length_error( len, d )
+	return string.format( "invalid length: %d - must be a multiple of %d", len, d )
+end
+
+local z85Decoder = { 0x00, 0x44, 0x00, 0x54, 0x53, 0x52, 0x48, 0x00,
+	0x4B, 0x4C, 0x46, 0x41, 0x00, 0x3F, 0x3E, 0x45,
+	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+	0x08, 0x09, 0x40, 0x00, 0x49, 0x42, 0x4A, 0x47,
+	0x51, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A,
+	0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32,
+	0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A,
+	0x3B, 0x3C, 0x3D, 0x4D, 0x00, 0x4E, 0x43, 0x00,
+	0x00, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10,
+	0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,
+	0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,
+	0x21, 0x22, 0x23, 0x4F, 0x00, 0x50, 0x00, 0x00 }
+
+function basexx.from_z85( str, ignore )
+	str = ignore_set( str, ignore )
+	if ( #str % 5 ) ~= 0 then
+		return nil, length_error( #str, 5 )
+	end
+
+	local result = {}
+
+	local value = 0
+	for i = 1, #str do
+		local index = string.byte( str, i ) - 31
+		if index < 1 or index >= #z85Decoder then
+			return nil, unexpected_char_error( str, i )
+		end
+		value = ( value * 85 ) + z85Decoder[ index ]
+		if ( i % 5 ) == 0 then
+			local divisor = 256 * 256 * 256
+			while divisor ~= 0 do
+				local b = math.floor( value / divisor ) % 256
+				table.insert( result, string.char( b ) )
+				divisor = math.floor( divisor / 256 )
+			end
+			value = 0
+		end
+	end
+
+	return table.concat( result )
+end
+
+local z85Encoder = "0123456789"..
+	"abcdefghijklmnopqrstuvwxyz"..
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"..
+	".-:+=^!/*?&<>()[]{}@%$#"
+
+function basexx.to_z85( str )
+	if ( #str % 4 ) ~= 0 then
+		return nil, length_error( #str, 4 )
+	end
+
+	local result = {}
+
+	local value = 0
+	for i = 1, #str do
+		local b = string.byte( str, i )
+		value = ( value * 256 ) + b
+		if ( i % 4 ) == 0 then
+			local divisor = 85 * 85 * 85 * 85
+			while divisor ~= 0 do
+				local index = ( math.floor( value / divisor ) % 85 ) + 1
+				table.insert( result, z85Encoder:sub( index, index ) )
+				divisor = math.floor( divisor / 85 )
+			end
+			value = 0
+		end
+	end
+
+	return table.concat( result )
+end
+
+--------------------------------------------------------------------------------
+
+return basexx
+]]></ProtectedString>
+					<int64 name="SourceAssetId">11789295336</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+			</Item>
+		</Item>
+		<Item class="ModuleScript" referent="RBX0275C6A14D50464E8DEEAC577DF713E1">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<Content name="LinkedSource"><null></null></Content>
+				<string name="Name">totp</string>
+				<string name="ScriptGuid">{7C8922B6-76DD-4BC1-AFBA-0B9D16D04815}</string>
+				<ProtectedString name="Source"><![CDATA[--[[
+MIT License
+
+Copyright (c) 2021 Cody Tilkins
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+]]
+
+-- please point this to proper location
+local otp = require(script.Parent["otp"])
+
+local totp = {}
+
+totp.at = function(instance, for_time, counter_offset)
+	return otp.generate_otp(instance, totp.timecode(instance, tonumber(for_time)) + (counter_offset or 0))
+end
+
+totp.now = function(instance, override)
+	local epoch = os.time()
+	return otp.generate_otp(instance, totp.timecode(instance, override or epoch)), instance.interval - (epoch % instance.interval), math.round((1-(epoch % instance.interval)/instance.interval)*100)/100
+end
+
+totp.valid_until = function(instance, for_time, valid_window)
+	valid_window = valid_window or 0
+	return for_time + ((self.interval + 1) * valid_window)
+end
+
+totp.verify = function(instance, key, for_time, valid_window)
+	valid_window = valid_window or 0
+	for_time = for_time or os.time()
+
+	if (valid_window > 0) then
+		for i=-valid_window, valid_window, 1 do
+			if (tostring(key) == tostring(totp.at(instance, for_time, i))) then
+				return true
+			end
+		end
+		return false
+	end
+	return tostring(key) == tostring(totp.at(instance, for_time))
+end
+
+totp.timecode = function(instance, for_time)
+	return math.floor(for_time/instance.interval)
+end
+
+return totp]]></ProtectedString>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>
