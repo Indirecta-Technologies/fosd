@@ -2,12 +2,12 @@
 	<Meta name="ExplicitAutoJoints">true</Meta>
 	<External>null</External>
 	<External>nil</External>
-	<Item class="ModuleScript" referent="RBX92ACB71FBB3247B3995EB56243248DA5">
+	<Item class="ModuleScript" referent="RBXD2DBA8C8452F41A4B0B0F5C8B6267863">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<Content name="LinkedSource"><null></null></Content>
 			<string name="Name">Piano</string>
-			<string name="ScriptGuid">{6D2D58CF-2249-442E-9EE9-6B385024D167}</string>
+			<string name="ScriptGuid">{38052979-AC1A-42F5-86ED-7AB4CFB1AE96}</string>
 			<ProtectedString name="Source"><![CDATA[--[[
 
   `/shdmmmmmmmmmd-`ymmmddyo:`       //                sm- /h/                        --
@@ -168,9 +168,8 @@ function module:Open()
 	end
 
 	local function RestorePianoKey(note)
-		local keynote = note - ((self["Transposition"]-1)*12)
-		local keyGui = self["AppFrame"]["PianoGui"].Keys[keynote]
-		if self:IsBlack(keynote) then
+		local keyGui = self["AppFrame"]["PianoGui"].Keys[note]
+		if self:IsBlack(note) then
 			keyGui.BackgroundColor3 = Color3.new(0, 0, 0)
 		else
 			keyGui.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -178,9 +177,8 @@ function module:Open()
 	end
 
 	local function HighlightPianoKey(note)
-		local keynote = note - ((self["Transposition"]-1)*12)
-		local keyGui = self["AppFrame"]["PianoGui"].Keys[keynote]
-		if self:IsBlack(keynote) then
+		local keyGui = self["AppFrame"]["PianoGui"].Keys[note]
+		if self:IsBlack(note) then
 			keyGui.BackgroundColor3 = Color3.new(50/255, 50/255, 50/255)
 		else
 			keyGui.BackgroundColor3 = Color3.new(200/255, 200/255, 200/255)
@@ -192,9 +190,9 @@ function module:Open()
 	local function PianoKeyPressed(Object, note)
 		local type = Object.UserInputType.Name
 		if type == "MouseButton1" or type == "Touch" then
+			HighlightPianoKey(note)
 			note += (self["Transposition"]-1 * 12)
 			PlayNoteSound(note)
-			HighlightPianoKey(note)
 		end
 	end
 
@@ -320,7 +318,7 @@ return module
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="Frame" referent="RBX6BDA572F982C4D7EA02117EF2B84A043">
+		<Item class="Frame" referent="RBXEC47F058C7E4494BB2D4FA8031661CB0">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -380,7 +378,7 @@ return module
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="Folder" referent="RBXCE8D572ADB46477B84F08951206525A2">
+			<Item class="Folder" referent="RBXDD000266DE9E46CC97F581925FB023AC">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<string name="Name">SoundFolder</string>
@@ -388,7 +386,7 @@ return module
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBX033418C30F09488AB6B2BCE641D7E0BD">
+			<Item class="Frame" referent="RBX04CB4CB2FA7B444394C0010D2E324B90">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -448,7 +446,7 @@ return module
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="UICorner" referent="RBXC7A5E31C6D7644CB88146804B700463C">
+				<Item class="UICorner" referent="RBXE2878290D9F649AC94FA0BAC32CF6B15">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<UDim name="CornerRadius">
@@ -460,7 +458,7 @@ return module
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX1B78B88B862E4D3199A743E11AAF3379">
+				<Item class="TextLabel" referent="RBX0635EC86BFCE4AFB83E215C9D58219B3">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -530,6 +528,7 @@ return module
 							<G>0</G>
 							<B>0</B>
 						</Color3>
+						<token name="TextDirection">0</token>
 						<bool name="TextScaled">false</bool>
 						<float name="TextSize">14</float>
 						<Color3 name="TextStrokeColor3">
@@ -547,7 +546,7 @@ return module
 						<int name="ZIndex">1</int>
 					</Properties>
 				</Item>
-				<Item class="TextLabel" referent="RBX658D0D2EE5214E649028906466181F8A">
+				<Item class="TextLabel" referent="RBXA95FE2F5CD604571AD9A953B8B380A3D">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -617,6 +616,7 @@ return module
 							<G>0</G>
 							<B>0</B>
 						</Color3>
+						<token name="TextDirection">0</token>
 						<bool name="TextScaled">false</bool>
 						<float name="TextSize">14</float>
 						<Color3 name="TextStrokeColor3">
@@ -635,7 +635,7 @@ return module
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="TextLabel" referent="RBX643CB5E1FAFE46E0BE403527232D9502">
+			<Item class="TextLabel" referent="RBXBEA463C5459443FFA8873A253F2D92DF">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -705,6 +705,7 @@ return module
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">20</float>
 					<Color3 name="TextStrokeColor3">
@@ -722,7 +723,7 @@ return module
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBXEE852B13182C449B905300A474B20879">
+			<Item class="TextLabel" referent="RBXD96B7FA745F844198E575972830EE13C">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -792,6 +793,7 @@ return module
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">16</float>
 					<Color3 name="TextStrokeColor3">
@@ -809,7 +811,7 @@ return module
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBX68FCF5466C67437BBB9D15822C994DB0">
+			<Item class="TextLabel" referent="RBX1C6576DE7E1B4BB6991A355EA5AEC064">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -879,6 +881,7 @@ return module
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">20</float>
 					<Color3 name="TextStrokeColor3">
@@ -896,7 +899,7 @@ return module
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBXD687238F653A4DF68720C3C25AC64F18">
+			<Item class="TextLabel" referent="RBX097C9F75D4644D02BC92CF361BE71632">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -966,6 +969,7 @@ return module
 						<G>1</G>
 						<B>1</B>
 					</Color3>
+					<token name="TextDirection">0</token>
 					<bool name="TextScaled">false</bool>
 					<float name="TextSize">16</float>
 					<Color3 name="TextStrokeColor3">
@@ -983,14 +987,14 @@ return module
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="LocalScript" referent="RBX829CFAC2D5AA4FF2B1526CA8DB7CDF29">
+			<Item class="LocalScript" referent="RBX940C8DF916404236B71494B647DE4AD5">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<bool name="Disabled">true</bool>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Main</string>
 					<token name="RunContext">0</token>
-					<string name="ScriptGuid">{38C5BA33-A06C-41AE-94E7-D866487C51C3}</string>
+					<string name="ScriptGuid">{428DF064-1E37-4E02-B204-CE056E814767}</string>
 					<ProtectedString name="Source"><![CDATA[Gui = script.Parent
 Player = game.Players.LocalPlayer
 PlayingEnabled = false
@@ -1546,7 +1550,7 @@ ScriptReady = true
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
 			</Item>
-			<Item class="Frame" referent="RBX7D530ADC25ED4EBBA4AFF6769267ED33">
+			<Item class="Frame" referent="RBX760C789EF10E4825B2C1D08D54EE5511">
 				<Properties>
 					<bool name="Active">false</bool>
 					<Vector2 name="AnchorPoint">
@@ -1606,7 +1610,7 @@ ScriptReady = true
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="Frame" referent="RBX5F30425E28FF4DB396EC501863C27DF0">
+				<Item class="Frame" referent="RBX539FFB3851EB4F57B7768D2A8C6B3A02">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1666,7 +1670,7 @@ ScriptReady = true
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextButton" referent="RBX37432E789DD04232AD31D1D3674CC734">
+					<Item class="TextButton" referent="RBX449B9A4658924274A1ED45CBF014AE1A">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -1741,6 +1745,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -1757,7 +1762,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX18F4550420084243B5B596BD90603586">
+						<Item class="TextLabel" referent="RBX0E241E6894614664BAA7C915E1D32A60">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -1828,6 +1833,7 @@ ScriptReady = true
 									<G>0.501960814</G>
 									<B>0.501960814</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">18</float>
 								<Color3 name="TextStrokeColor3">
@@ -1845,7 +1851,7 @@ ScriptReady = true
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX33B77FFEF9BF4A72BF24A04FEF4476B9">
+						<Item class="UICorner" referent="RBXFB9829402ADF4C9BA5067844E5152C6C">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -1858,7 +1864,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXF0D98EEF67974CF9ACB29B78EC598651">
+					<Item class="TextButton" referent="RBXE21F97B5E10942E4844143C33CDF6BF9">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -1933,6 +1939,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -1949,7 +1956,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">2</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXDF75E37CAAF54F54ACED2E6AA49CF0CA">
+						<Item class="TextLabel" referent="RBXB8805E8F60A549F0A5B55EDEBFB750AC">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -2019,6 +2026,7 @@ ScriptReady = true
 									<G>1</G>
 									<B>1</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">17</float>
 								<Color3 name="TextStrokeColor3">
@@ -2036,7 +2044,7 @@ ScriptReady = true
 								<int name="ZIndex">2</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX8A95FDB077C3494C9D219BF52B47D00D">
+						<Item class="UICorner" referent="RBXC74CCCABC8BA4C719E3ED113D0F83B79">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -2049,7 +2057,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBX7C26166062F14D34907279DC343A2DDF">
+					<Item class="TextButton" referent="RBXB046F310F2554108AE150BBB79B80BD2">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -2124,6 +2132,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -2140,7 +2149,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX41CB129F56BF4A5EB2DB3FD8169AC7C1">
+						<Item class="TextLabel" referent="RBX5A05AA9AE55B4FDD95C07FE6276B3671">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -2211,6 +2220,7 @@ ScriptReady = true
 									<G>0.501960814</G>
 									<B>0.501960814</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">18</float>
 								<Color3 name="TextStrokeColor3">
@@ -2228,7 +2238,7 @@ ScriptReady = true
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX4096FA81066042E7BA628671C37147F3">
+						<Item class="UICorner" referent="RBX17022899D0D540208BA853AE963BBA70">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -2241,7 +2251,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXBC264593C62C400989092C80A1D5612A">
+					<Item class="TextButton" referent="RBX24FEF5EC292540659F9CD8A48F337BC7">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -2316,6 +2326,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -2332,7 +2343,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">2</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXF6BD8C92570F47C59FE49117426D7D96">
+						<Item class="TextLabel" referent="RBX18EF2D0CAC1C4B4F909EBFC27111AA3B">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -2402,6 +2413,7 @@ ScriptReady = true
 									<G>1</G>
 									<B>1</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">17</float>
 								<Color3 name="TextStrokeColor3">
@@ -2419,7 +2431,7 @@ ScriptReady = true
 								<int name="ZIndex">2</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX07B7F28B2B8A4DFA97BE10CB695870CA">
+						<Item class="UICorner" referent="RBX50D2006C4BA34A7F82B0C70EB24B264B">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -2432,7 +2444,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXDC5118BC62B643F9900BE1F2E1877CA6">
+					<Item class="TextButton" referent="RBX1C3BDF4EAA1D42299AD159ACDB3FF34C">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -2507,6 +2519,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -2523,7 +2536,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXD768FE72CA994D4489D928D6AC78E45B">
+						<Item class="TextLabel" referent="RBXFDA18793F21242049147CBF4434550BB">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -2594,6 +2607,7 @@ ScriptReady = true
 									<G>0.501960814</G>
 									<B>0.501960814</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">18</float>
 								<Color3 name="TextStrokeColor3">
@@ -2611,7 +2625,7 @@ ScriptReady = true
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX97418591B7DC41DEB9E3F64022AF6AF7">
+						<Item class="UICorner" referent="RBX7F3954599A254724B9E60B56B871BF5A">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -2624,7 +2638,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXB7AABAF7CA7C4CD69CD98B6B64952D6E">
+					<Item class="TextButton" referent="RBX82C1DFBC7C0447C68AFBB2E338E1FA69">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -2699,6 +2713,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -2715,7 +2730,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXF1630A6AD02A4923BEC7406959C6F022">
+						<Item class="TextLabel" referent="RBXA7AA05A07BB7446E84E08648C588DC3A">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -2786,6 +2801,7 @@ ScriptReady = true
 									<G>0.501960814</G>
 									<B>0.501960814</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">18</float>
 								<Color3 name="TextStrokeColor3">
@@ -2803,7 +2819,7 @@ ScriptReady = true
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX94A160952F3746DA8F84FBA0DA544ED9">
+						<Item class="UICorner" referent="RBXFE21BA921126432BB2EA9DF67B64F9B3">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -2816,7 +2832,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXCCA38585B8E2482FB2829D7188AAEFC7">
+					<Item class="TextButton" referent="RBX13A5F2CEC904475A9E49E092E836181E">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -2891,6 +2907,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -2907,7 +2924,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">2</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX134FA8AD03C941F0A663FD8342350808">
+						<Item class="TextLabel" referent="RBX5DD131493AC34E3EA6B046F4A505DF3F">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -2977,6 +2994,7 @@ ScriptReady = true
 									<G>1</G>
 									<B>1</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">17</float>
 								<Color3 name="TextStrokeColor3">
@@ -2994,7 +3012,7 @@ ScriptReady = true
 								<int name="ZIndex">2</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX6954397EEB444EAEA0166365A0EA64C4">
+						<Item class="UICorner" referent="RBXFBDF54E29E134E39B56DF652C410F48C">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -3007,7 +3025,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXD16C431DF0104ED08A63A85B50B5057E">
+					<Item class="TextButton" referent="RBX8DFBA7A060CC487AB82DD498C39B3A9F">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -3082,6 +3100,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -3098,7 +3117,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX0A367FE00DB540E59E18BFFB5BFF6701">
+						<Item class="TextLabel" referent="RBXC9F84E0612394824B6EB6AF7130C561C">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -3169,6 +3188,7 @@ ScriptReady = true
 									<G>0.501960814</G>
 									<B>0.501960814</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">18</float>
 								<Color3 name="TextStrokeColor3">
@@ -3186,7 +3206,7 @@ ScriptReady = true
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX1B7E66BABFAF488EBC3B8A082F0A61AB">
+						<Item class="UICorner" referent="RBX0D62FB49AC614CDB94D5071AF34A6959">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -3199,7 +3219,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXED343B29D09C4B0FA81463E14F7C60DC">
+					<Item class="TextButton" referent="RBXADB85AC8D1DA4C0C83CB0272289DCD4E">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -3274,6 +3294,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -3290,7 +3311,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">2</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX47D1930273CF474A9B76DB826D89AD9A">
+						<Item class="TextLabel" referent="RBX34C80159A7504BFBB0A189253E29A97E">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -3360,6 +3381,7 @@ ScriptReady = true
 									<G>1</G>
 									<B>1</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">17</float>
 								<Color3 name="TextStrokeColor3">
@@ -3377,7 +3399,7 @@ ScriptReady = true
 								<int name="ZIndex">2</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX7C9C7063819B4B1B92627B06E8ABDF48">
+						<Item class="UICorner" referent="RBXBAB80212D07244268AFB55D65FF04D2A">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -3390,7 +3412,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXB5D00F2E4B68451488F73DCAA96B3FD2">
+					<Item class="TextButton" referent="RBX05BE935BA24C402D8FC3CC648B6BD10A">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -3465,6 +3487,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -3481,7 +3504,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXAE8DA41894A2458F8C13EE143B602432">
+						<Item class="TextLabel" referent="RBX666C7B633A2E4885A557369E744C1584">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -3552,6 +3575,7 @@ ScriptReady = true
 									<G>0.501960814</G>
 									<B>0.501960814</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">18</float>
 								<Color3 name="TextStrokeColor3">
@@ -3569,7 +3593,7 @@ ScriptReady = true
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX30385D9DCC0142ECB86594B2BA008ACA">
+						<Item class="UICorner" referent="RBX0B0FDF5F142A4ED5B448317B8DAEADC1">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -3582,7 +3606,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBX3D21618E1F9B49E2B7B09799449ABC4A">
+					<Item class="TextButton" referent="RBX9C67B6A5832E48B495E12A1139BA32A8">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -3657,6 +3681,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -3673,7 +3698,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">2</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXBBB7CABFFB59450C95E717938EF5E365">
+						<Item class="TextLabel" referent="RBXAC8D2CB2F5A24D0ABA17D999B0013255">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -3743,6 +3768,7 @@ ScriptReady = true
 									<G>1</G>
 									<B>1</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">17</float>
 								<Color3 name="TextStrokeColor3">
@@ -3760,7 +3786,7 @@ ScriptReady = true
 								<int name="ZIndex">2</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBXCDB8DB93DC8249B0B17B52F9267191A8">
+						<Item class="UICorner" referent="RBXB8E0FD88445649AF853F1B538280AF86">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -3773,7 +3799,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBX7C27B19DE6B4451D8EC7626127A4B4E9">
+					<Item class="TextButton" referent="RBXF9950C30603E48678E45EB8224227521">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -3848,6 +3874,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -3864,7 +3891,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX628301ADB5EC4948A1D7656065D2AE85">
+						<Item class="TextLabel" referent="RBX697D3380D8244C509DD2F1AE80C00092">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -3935,6 +3962,7 @@ ScriptReady = true
 									<G>0.501960814</G>
 									<B>0.501960814</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">18</float>
 								<Color3 name="TextStrokeColor3">
@@ -3952,7 +3980,7 @@ ScriptReady = true
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX6A5A1D42C76648DDB764AAC9E23D4E59">
+						<Item class="UICorner" referent="RBX08BB2EA16FE243AEAEF2AAC8BCD2B55F">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -3965,7 +3993,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBX6C096F0067C74F01AEA95A43F938B6B5">
+					<Item class="TextButton" referent="RBXD9B715F3814740AF98413DFA92F5A44C">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -4040,6 +4068,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -4056,7 +4085,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX3D0F9F184AA34407BA5474666CC8CA92">
+						<Item class="TextLabel" referent="RBXC27929066673436ABCF356C487E65B87">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -4127,6 +4156,7 @@ ScriptReady = true
 									<G>0.501960814</G>
 									<B>0.501960814</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">18</float>
 								<Color3 name="TextStrokeColor3">
@@ -4144,7 +4174,7 @@ ScriptReady = true
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBXF3A1EC82476D4AA48FB78C23B0A37CBE">
+						<Item class="UICorner" referent="RBX9FC80E6154184FC29B3556A4A2C31A7E">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -4157,7 +4187,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXE6521F18FCD3430E94742CD8E82F4C6A">
+					<Item class="TextButton" referent="RBXD55FBC4860084BBD9C81DB1BD517BB22">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -4232,6 +4262,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -4248,7 +4279,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">2</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX791D46DA6395438CAEFDD50805147444">
+						<Item class="TextLabel" referent="RBXBE7A5F7C0FB64C5D8D07F50E12F93E6B">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -4318,6 +4349,7 @@ ScriptReady = true
 									<G>1</G>
 									<B>1</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">17</float>
 								<Color3 name="TextStrokeColor3">
@@ -4335,7 +4367,7 @@ ScriptReady = true
 								<int name="ZIndex">2</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX88E4482946074208B57B533C7A3D2AF2">
+						<Item class="UICorner" referent="RBXCBFF42FAD24746FDB56577AEA3493227">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -4348,7 +4380,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBX483768D7603945778193AE22B055E14A">
+					<Item class="TextButton" referent="RBXB0029F5AC5264D69AF98AB6A1E4E56D0">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -4423,6 +4455,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -4439,7 +4472,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXDCA3D9FCC96F4AB58EAD8F06B6E61929">
+						<Item class="TextLabel" referent="RBX6793362D8B0F4CA0830312775F93A31E">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -4510,6 +4543,7 @@ ScriptReady = true
 									<G>0.501960814</G>
 									<B>0.501960814</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">18</float>
 								<Color3 name="TextStrokeColor3">
@@ -4527,7 +4561,7 @@ ScriptReady = true
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBXD5A57CF98C544C3B9435FD56DAE87AA5">
+						<Item class="UICorner" referent="RBX5DED99CEDDA04E5EA3F1C07AAD45147B">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -4540,7 +4574,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXFFC027BE4379481F93B7B41C0F239249">
+					<Item class="TextButton" referent="RBX6683F49114F043688DE1456F28A7E3DF">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -4615,6 +4649,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -4631,7 +4666,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">2</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX4E7358C945CA457191F056E95C974021">
+						<Item class="TextLabel" referent="RBX6F29539D099E4250847D2F030713D932">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -4701,6 +4736,7 @@ ScriptReady = true
 									<G>1</G>
 									<B>1</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">17</float>
 								<Color3 name="TextStrokeColor3">
@@ -4718,7 +4754,7 @@ ScriptReady = true
 								<int name="ZIndex">2</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBXE1FF19D08BFC47429BAB478ED8F70A7C">
+						<Item class="UICorner" referent="RBXB4285D94D35C4B14ADF056E8AD245873">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -4731,7 +4767,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXF3F96F7EC0B24F61954D5FA68ECA3152">
+					<Item class="TextButton" referent="RBX83B85C6BE9EC4094B1DF633DB258D16C">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -4806,6 +4842,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -4822,7 +4859,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX82231D5E508245B18F042E5F1CEE296D">
+						<Item class="TextLabel" referent="RBXBD63F07E571F4B95A10415672871FF86">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -4893,6 +4930,7 @@ ScriptReady = true
 									<G>0.501960814</G>
 									<B>0.501960814</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">18</float>
 								<Color3 name="TextStrokeColor3">
@@ -4910,7 +4948,7 @@ ScriptReady = true
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX3D93731BDC6D4B4E99FC62ABCF7CE798">
+						<Item class="UICorner" referent="RBXE614EE3697424312A4C7CA940DAF5815">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -4923,7 +4961,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXBF9A8ED10C904584B80A24211F97A292">
+					<Item class="TextButton" referent="RBXCC928C40801F4DD79589D4566D3805F9">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -4998,6 +5036,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -5014,7 +5053,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX1FA78E93F7F04A19B8A8453DB15DC78E">
+						<Item class="TextLabel" referent="RBX1C291FB915744456B5DC5654DEA97C7D">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -5085,6 +5124,7 @@ ScriptReady = true
 									<G>0.501960814</G>
 									<B>0.501960814</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">18</float>
 								<Color3 name="TextStrokeColor3">
@@ -5102,7 +5142,7 @@ ScriptReady = true
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX8FC6E1FDFF0B4FF5BD800F6AF2CCC5C7">
+						<Item class="UICorner" referent="RBX91A5D9A6AEB5409FA9F5C82666A4EACB">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -5115,7 +5155,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBX7F37035EE6CF48768C9007411180BB6A">
+					<Item class="TextButton" referent="RBX73EBE835989D4ED8BAE0A169869F4622">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -5190,6 +5230,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -5206,7 +5247,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">2</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX167E681FB4434A9284EF28D591032E71">
+						<Item class="TextLabel" referent="RBXAF25DCE9F56E43558F63A846378CBCF8">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -5276,6 +5317,7 @@ ScriptReady = true
 									<G>1</G>
 									<B>1</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">17</float>
 								<Color3 name="TextStrokeColor3">
@@ -5293,7 +5335,7 @@ ScriptReady = true
 								<int name="ZIndex">2</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBX029C5DF4AEA1456C9CD540B2C5B551A2">
+						<Item class="UICorner" referent="RBXC460AF9BD708405D813D4FAABA5F5B91">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
@@ -5306,7 +5348,7 @@ ScriptReady = true
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextButton" referent="RBXD767BC288BA6452E9686A73B8F2E4937">
+					<Item class="TextButton" referent="RBXF54868E9EA4648D8A4F1E7A0A9532431">
 						<Properties>
 							<bool name="Active">true</bool>
 							<Vector2 name="AnchorPoint">
@@ -5381,6 +5423,7 @@ ScriptReady = true
 								<G>0</G>
 								<B>0</B>
 							</Color3>
+							<token name="TextDirection">0</token>
 							<bool name="TextScaled">false</bool>
 							<float name="TextSize">14</float>
 							<Color3 name="TextStrokeColor3">
@@ -5397,7 +5440,7 @@ ScriptReady = true
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXB4359EE34F52493C880A5681BC0D25B8">
+						<Item class="TextLabel" referent="RBXC8907DC3655D4A6AACE8C28895833206">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -5468,6 +5511,7 @@ ScriptReady = true
 									<G>0.501960814</G>
 									<B>0.501960814</B>
 								</Color3>
+								<token name="TextDirection">0</token>
 								<bool name="TextScaled">false</bool>
 								<float name="TextSize">18</float>
 								<Color3 name="TextStrokeColor3">
@@ -5485,7 +5529,7 @@ ScriptReady = true
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="UICorner" referent="RBXC53C105DDC36478191E242A87FD90DC8">
+						<Item class="UICorner" referent="RBX6AF1038D64B641448A4FFDA8B65CF80F">
 							<Properties>
 								<BinaryString name="AttributesSerialize"></BinaryString>
 								<UDim name="CornerRadius">
